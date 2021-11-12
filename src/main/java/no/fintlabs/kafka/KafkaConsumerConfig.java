@@ -39,7 +39,6 @@ public class KafkaConsumerConfig {
 
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "no.fintlabs.kafka.CustomDeserializer");
 
-
 //        ObjectMapper mapper = new ObjectMapper();
 //        JavaType type = mapper.getTypeFactory()
 //                .constructParametricType(EntityMessage.class, AdministrativEnhetResource.class);
