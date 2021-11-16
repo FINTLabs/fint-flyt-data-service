@@ -13,9 +13,9 @@ import org.springframework.stereotype.Component;
 public class KlassifikasjonssystemConsumer {
     private final ObjectMapper mapper = new ObjectMapper();
 
-    @KafkaListener(topics = "entity.arkiv.noark.klassifikasjonssystem")
-    public void processMessage(ConsumerRecord<String, String> row) throws JsonProcessingException {
-        KlassifikasjonssystemResource value = mapper.readValue(row.value(), KlassifikasjonssystemResource.class);
-        log.info("Message received by consumer 1: " + value.toString());
-    }
+//    @KafkaListener(topics = "entity.arkiv.noark.klassifikasjonssystem")
+//    public void processMessage(ConsumerRecord<String, String> row) throws JsonProcessingException {
+//        KlassifikasjonssystemResource value = mapper.readValue(row.value(), KlassifikasjonssystemResource.class);
+//        log.info("Message received by consumer 1: " + value.toString());
+//    }
 }

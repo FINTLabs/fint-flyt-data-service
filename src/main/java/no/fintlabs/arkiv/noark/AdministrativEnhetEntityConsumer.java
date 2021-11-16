@@ -12,11 +12,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class AdministrativEnhetEntityConsumer {
 
-    private final ObjectMapper mapper = new ObjectMapper();
-
-    @KafkaListener(topics = "entity.arkiv.noark.administrativenhet")
-    public void processMessage(ConsumerRecord<String, String> row) throws JsonProcessingException {
-        AdministrativEnhetResource value = mapper.readValue(row.value(), AdministrativEnhetResource.class);
-        log.info("Message received by consumer 1: " + value.toString());
-    }
+//    private final ObjectMapper mapper = new ObjectMapper();
+//
+//    @KafkaListener(topics = "entity.arkiv.noark.administrativenhet")
+//    public void processMessage(ConsumerRecord<String, String> row) throws JsonProcessingException {
+//        AdministrativEnhetResource value = mapper.readValue(row.value(), AdministrativEnhetResource.class);
+//        log.info("Message received by consumer 1: " + value.toString());
+//    }
 }

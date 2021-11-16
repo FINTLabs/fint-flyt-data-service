@@ -1,5 +1,6 @@
 package no.fintlabs.kafka;
 
+import lombok.Getter;
 import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -12,6 +13,7 @@ import java.util.Map;
 @Configuration
 public class KafkaAdminConfiguration {
 
+    @Getter
     @Value(value = "${spring.kafka.producer.bootstrap-servers}")
     private String bootstrapAddress;
 
