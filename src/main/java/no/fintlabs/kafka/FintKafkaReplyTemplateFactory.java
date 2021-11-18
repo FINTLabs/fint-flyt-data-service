@@ -1,4 +1,4 @@
-package no.fintlabs.arkiv.noark;
+package no.fintlabs.kafka;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JavaType;

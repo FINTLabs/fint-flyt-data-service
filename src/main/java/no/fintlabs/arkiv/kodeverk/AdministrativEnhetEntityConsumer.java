@@ -1,4 +1,4 @@
-package no.fintlabs.arkiv.noark;
+package no.fintlabs.arkiv.kodeverk;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
