@@ -1,5 +1,6 @@
 package no.fintlabs.arkiv.noark;
 
+import lombok.extern.slf4j.Slf4j;
 import no.fint.model.resource.arkiv.samferdsel.SoknadDrosjeloyveResource;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -13,24 +14,26 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import javax.annotation.PostConstruct;
+import java.time.Duration;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+@Slf4j
 @Service
 public class DrosjeloyveController {
 
-    public DrosjeloyveController(ConcurrentKafkaListenerContainerFactory<String, SoknadDrosjeloyveResource> kafkaListenerContainerFactory) {
+    public DrosjeloyveController(ConcurrentKafkaListenerContainerFactory<String, Object> kafkaListenerContainerFactory) {
         this.kafkaListenerContainerFactory = kafkaListenerContainerFactory;
     }
 
-    private final ConcurrentKafkaListenerContainerFactory<String, SoknadDrosjeloyveResource> kafkaListenerContainerFactory;
+    private final ConcurrentKafkaListenerContainerFactory<String, Object> kafkaListenerContainerFactory;
 
     @PostConstruct
     //@GetMapping("drosjeloyve")
     public void getDrosjeloyve() {
 
-        int systemid = 1234;
+        int systemid = 1414;
 
         String requestTopic = "request.arkiv.samferdsel.soknaddrosjeloyve.systemid";
         String responseTopic = "response.arkiv.samferdsel.soknaddrosjeloyve";
@@ -38,9 +41,9 @@ public class DrosjeloyveController {
         new NewTopic(requestTopic, 1, (short) 1);
         new NewTopic(responseTopic, 1, (short) 1);
 
-        ReplyingKafkaTemplate<String, String, SoknadDrosjeloyveResource> template =
-                new FintKafkaReplyTemplateFactory<String, SoknadDrosjeloyveResource>(kafkaListenerContainerFactory)
-                        .create(String.class, SoknadDrosjeloyveResource.class, responseTopic);
+        ReplyingKafkaTemplate<String, String, Object> template =
+                new FintKafkaReplyTemplateFactory<String, Object>(kafkaListenerContainerFactory)
+                        .create(String.class, Object.class, responseTopic);
         template.start();
         while (!template.isRunning()){
             try {
@@ -56,23 +59,24 @@ public class DrosjeloyveController {
             e.printStackTrace();
         }
 
+        template.setDefaultReplyTimeout(Duration.ofSeconds(30));
+        template.setSharedReplyTopic(true);
+
         ProducerRecord<String, String> record = new ProducerRecord<>(requestTopic, String.valueOf(systemid));
-        RequestReplyFuture<String, String, SoknadDrosjeloyveResource> replyFuture = template.sendAndReceive(record);
+        RequestReplyFuture<String, String, Object> replyFuture = template.sendAndReceive(record);
         SendResult<String, String> sendResult = null;
 
         try {
 
-            sendResult = replyFuture.getSendFuture().get(10, TimeUnit.SECONDS);
-            System.out.println("Sent ok: " + sendResult.getRecordMetadata());
-            ConsumerRecord<String, SoknadDrosjeloyveResource> consumerRecord = null;
-            consumerRecord = replyFuture.get(10, TimeUnit.SECONDS);
-            System.out.println("Return value: " + consumerRecord.value());
+            sendResult = replyFuture.getSendFuture().get();
+            log.info("Sent ok: " + sendResult.getRecordMetadata());
+            ConsumerRecord<String, Object> consumerRecord = null;
+            consumerRecord = replyFuture.get();
+            log.info("Return value: " + consumerRecord.value());
 
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (TimeoutException e) {
             e.printStackTrace();
         }
     }
