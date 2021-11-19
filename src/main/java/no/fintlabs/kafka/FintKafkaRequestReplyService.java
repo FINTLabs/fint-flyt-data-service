@@ -15,7 +15,7 @@ import java.util.concurrent.ExecutionException;
 public class FintKafkaRequestReplyService<T> {
     private final ReplyingKafkaTemplate<String, String, T> replyingKafkaTemplate;
 
-    public FintKafkaRequestReplyService(ReplyingKafkaTemplate<String, String, T> sakReplyingKafkaTemplate) {
+    public FintKafkaRequestReplyService(ReplyingKafkaTemplate<String, String, T> replyingKafkaTemplate) {
         this.replyingKafkaTemplate = replyingKafkaTemplate;
     }
 

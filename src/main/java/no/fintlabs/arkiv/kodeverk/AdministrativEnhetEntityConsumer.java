@@ -1,7 +1,7 @@
 package no.fintlabs.arkiv.kodeverk;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import no.fint.model.resource.arkiv.noark.AdministrativEnhetResource;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -12,11 +12,19 @@ import org.springframework.stereotype.Component;
 @Component
 public class AdministrativEnhetEntityConsumer {
 
-//    private final ObjectMapper mapper = new ObjectMapper();
-//
-//    @KafkaListener(topics = "entity.arkiv.noark.administrativenhet")
-//    public void processMessage(ConsumerRecord<String, String> row) throws JsonProcessingException {
-//        AdministrativEnhetResource value = mapper.readValue(row.value(), AdministrativEnhetResource.class);
-//        log.info("Message received by consumer 1: " + value.toString());
-//    }
+    @Getter
+    private final ResourceCache<AdministrativEnhetResource> resourceCache;
+
+    public AdministrativEnhetEntityConsumer(ObjectMapper mapper) {
+        this.resourceCache = new ResourceCache<>(
+                administrativEnhetResource -> administrativEnhetResource.getSystemId().getIdentifikatorverdi(),
+                mapper,
+                AdministrativEnhetResource.class
+        );
+    }
+
+    @KafkaListener(topics = "entity.arkiv.noark.administrativenhet")
+    public void processMessage(ConsumerRecord<String, String> consumerRecord) {
+        this.resourceCache.add(consumerRecord);
+    }
 }
