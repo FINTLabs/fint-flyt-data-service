@@ -25,7 +25,7 @@ public class ResourceCache<R> {
         this.clazz = clazz;
     }
 
-    protected void add(ConsumerRecord<String, String> consumerRecord) {
+    public void add(ConsumerRecord<String, String> consumerRecord) {
         R value = null;
         try {
             value = mapper.readValue(consumerRecord.value(), clazz);

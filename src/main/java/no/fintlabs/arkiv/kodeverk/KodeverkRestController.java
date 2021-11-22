@@ -1,6 +1,7 @@
 package no.fintlabs.arkiv.kodeverk;
 
 import no.fint.model.resource.arkiv.noark.AdministrativEnhetResource;
+import no.fintlabs.arkiv.kodeverk.consumers.AdministrativEnhetEntityConsumer;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;

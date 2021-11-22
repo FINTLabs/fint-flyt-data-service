@@ -1,9 +1,10 @@
-package no.fintlabs.arkiv.kodeverk;
+package no.fintlabs.arkiv.kodeverk.consumers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import no.fint.model.resource.arkiv.noark.AdministrativEnhetResource;
+import no.fintlabs.arkiv.kodeverk.ResourceCache;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
