@@ -3,7 +3,7 @@ package no.fintlabs.arkiv.kodeverk.consumers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import no.fint.model.resource.arkiv.noark.KlassifikasjonssystemResource;
+import no.fint.model.resource.arkiv.kodeverk.SkjermingshjemmelResource;
 import no.fintlabs.arkiv.kodeverk.ResourceCache;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -11,19 +11,20 @@ import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-public class KlassifikasjonssystemConsumer {
-    @Getter
-    private final ResourceCache<KlassifikasjonssystemResource> resourceCache;
+public class SkjermingshjemmelConsumer {
 
-    public KlassifikasjonssystemConsumer(ObjectMapper mapper) {
+    @Getter
+    private final ResourceCache<SkjermingshjemmelResource> resourceCache;
+
+    public SkjermingshjemmelConsumer(ObjectMapper mapper) {
         this.resourceCache = new ResourceCache<>(
-                klassifikasjonssystemResource -> klassifikasjonssystemResource.getSystemId().getIdentifikatorverdi(),
+                skjermingshjemmelResource -> skjermingshjemmelResource.getSystemId().getIdentifikatorverdi(),
                 mapper,
-                KlassifikasjonssystemResource.class
+                SkjermingshjemmelResource.class
         );
     }
 
-    @KafkaListener(topics = "entity.arkiv.noark.klassifikasjonssystem")
+    @KafkaListener(topics = "entity.arkiv.kodeverk.skjermingshjemmel")
     public void processMessage(ConsumerRecord<String, String> consumerRecord) {
         this.resourceCache.add(consumerRecord);
     }

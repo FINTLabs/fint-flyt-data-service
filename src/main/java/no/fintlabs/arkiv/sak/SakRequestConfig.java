@@ -60,16 +60,16 @@ public class SakRequestConfig {
         return sakReplyingKafkaTemplate;
     }
 
+    // TODO: 22/11/2021 Move to YAML
     public Map<String, Object> createProducerConfigs() {
         Map<String, Object> props = new HashMap<>();
-        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG,
-                "localhost:29092");
-        props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG,
-                StringSerializer.class);
+        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:29092");
+        props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
         return props;
     }
 
+    // TODO: 22/11/2021 Move to YAML
     public Map<String, Object> createConsumerConfigs() {
         Map<String, Object> props = new HashMap<>();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:29092");
