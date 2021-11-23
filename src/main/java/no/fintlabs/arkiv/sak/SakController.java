@@ -19,9 +19,13 @@ public class SakController {
     }
 
     @Scheduled(initialDelay = 5000, fixedDelay = 200000)
+    public void test() {
+        this.getSak(String.valueOf(1414));
+    }
+
     @GetMapping("systemid")
-    public SakResource getSak() {
-        return sakRequestService.getBySystemId(String.valueOf(1414));
+    public SakResource getSak(String systemId) {
+        return sakRequestService.getBySystemId(systemId);
     }
 
 }

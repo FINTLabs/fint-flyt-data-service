@@ -2,7 +2,8 @@ package no.fintlabs.arkiv.sak;
 
 import lombok.extern.slf4j.Slf4j;
 import no.fint.model.resource.arkiv.noark.SakResource;
-import no.fintlabs.kafka.FintKafkaRequestReplyUtil;
+import no.fintlabs.kafka.util.FintKafkaRequestReplyUtil;
+import no.fintlabs.kafka.util.RequestReplyOperationArgs;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.kafka.requestreply.ReplyingKafkaTemplate;
 import org.springframework.stereotype.Service;
@@ -18,21 +19,21 @@ public class SakRequestService {
     }
 
     public SakResource getBySystemId(String systemId) {
-        return FintKafkaRequestReplyUtil.get(
+        return FintKafkaRequestReplyUtil.get(new RequestReplyOperationArgs<>(
                 SakRequestConfig.requestTopicSystemId,
                 systemId,
                 sakReplyingKafkaTemplate,
                 SakResource.class
-        );
+        ));
     }
 
     public SakResource getByMappeId(String mappeId) {
-        return FintKafkaRequestReplyUtil.get(
+        return FintKafkaRequestReplyUtil.get(new RequestReplyOperationArgs<>(
                 SakRequestConfig.requestTopicMappeId,
                 mappeId,
                 sakReplyingKafkaTemplate,
                 SakResource.class
-        );
+        ));
     }
 
 }

@@ -20,6 +20,7 @@ import java.util.Map;
 @Configuration
 public class SakRequestConfig {
 
+    // TODO: 23/11/2021 prefix for query param? eg: .by.
     public static final String requestTopicSystemId = "request.arkiv.noark.sak.systemid";
     public static final String requestTopicMappeId = "request.arkiv.noark.sak.mappeid";
 
