@@ -11,12 +11,12 @@ import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-public class SakstatusConsumer {
+public class SaksstatusConsumer {
 
     @Getter
     private final ResourceCache<SaksstatusResource> resourceCache;
 
-    public SakstatusConsumer(ObjectMapper mapper) {
+    public SaksstatusConsumer(ObjectMapper mapper) {
         this.resourceCache = new ResourceCache<>(
                 saksstatusResource -> saksstatusResource.getSystemId().getIdentifikatorverdi(),
                 mapper,
@@ -24,7 +24,7 @@ public class SakstatusConsumer {
         );
     }
 
-    @KafkaListener(topics = "entity.arkiv.kodeverk.sakstatus")
+    @KafkaListener(topics = "entity.arkiv.kodeverk.saksstatus")
     public void processMessage(ConsumerRecord<String, String> consumerRecord) {
         this.resourceCache.add(consumerRecord);
     }

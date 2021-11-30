@@ -18,7 +18,7 @@ public class KodeverkRestController {
     private final AdministrativEnhetEntityConsumer administrativEnhetEntityConsumer;
     private final KlassifikasjonssystemConsumer klassifikasjonssystemConsumer;
     private final RolleConsumer rolleConsumer;
-    private final SakstatusConsumer sakstatusConsumer;
+    private final SaksstatusConsumer saksstatusConsumer;
     private final ArkivdelConsumer arkivdelConsumer;
     private final SkjermingshjemmelConsumer skjermingshjemmelConsumer;
     private final TilgangsrestriksjonConsumer tilgangsrestriksjonConsumer;
@@ -26,11 +26,11 @@ public class KodeverkRestController {
     private final DokumentstatusConsumer dokumentstatusConsumer;
     private final DokumenttypeConsumer dokumenttypeConsumer;
 
-    public KodeverkRestController(AdministrativEnhetEntityConsumer administrativEnhetEntityConsumer, KlassifikasjonssystemConsumer klassifikasjonssystemConsumer, RolleConsumer rolleConsumer, SakstatusConsumer sakstatusConsumer, ArkivdelConsumer arkivdelConsumer, SkjermingshjemmelConsumer skjermingshjemmelConsumer, TilgangsrestriksjonConsumer tilgangsrestriksjonConsumer, KlassifikasjonstypeConsumer klassifikasjonstypeConsumer, DokumentstatusConsumer dokumentstatusConsumer, DokumenttypeConsumer dokumenttypeConsumer) {
+    public KodeverkRestController(AdministrativEnhetEntityConsumer administrativEnhetEntityConsumer, KlassifikasjonssystemConsumer klassifikasjonssystemConsumer, RolleConsumer rolleConsumer, SaksstatusConsumer saksstatusConsumer, ArkivdelConsumer arkivdelConsumer, SkjermingshjemmelConsumer skjermingshjemmelConsumer, TilgangsrestriksjonConsumer tilgangsrestriksjonConsumer, KlassifikasjonstypeConsumer klassifikasjonstypeConsumer, DokumentstatusConsumer dokumentstatusConsumer, DokumenttypeConsumer dokumenttypeConsumer) {
         this.administrativEnhetEntityConsumer = administrativEnhetEntityConsumer;
         this.klassifikasjonssystemConsumer = klassifikasjonssystemConsumer;
         this.rolleConsumer = rolleConsumer;
-        this.sakstatusConsumer = sakstatusConsumer;
+        this.saksstatusConsumer = saksstatusConsumer;
         this.arkivdelConsumer = arkivdelConsumer;
         this.skjermingshjemmelConsumer = skjermingshjemmelConsumer;
         this.tilgangsrestriksjonConsumer = tilgangsrestriksjonConsumer;
@@ -56,7 +56,7 @@ public class KodeverkRestController {
 
     @GetMapping("sakstatus")
     public Collection<SaksstatusResource> getSakstatus() {
-        return sakstatusConsumer.getResourceCache().getValues();
+        return saksstatusConsumer.getResourceCache().getValues();
     }
 
     @GetMapping("arkivdel")
