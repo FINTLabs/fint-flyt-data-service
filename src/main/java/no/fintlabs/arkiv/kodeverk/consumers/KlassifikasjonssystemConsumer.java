@@ -5,7 +5,9 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import no.fint.model.resource.arkiv.noark.KlassifikasjonssystemResource;
 import no.fintlabs.arkiv.kodeverk.ResourceCache;
+import no.fintlabs.kafka.TopicNameService;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.springframework.context.annotation.Bean;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
@@ -23,8 +25,14 @@ public class KlassifikasjonssystemConsumer {
         );
     }
 
-    @KafkaListener(topics = "entity.arkiv.noark.klassifikasjonssystem")
+    @Bean
+    String klassifikasjonssystemTopicName(TopicNameService topicNameService) {
+        return topicNameService.generateEntityTopicName("arkiv.noark.klassifikasjonssystem");
+    }
+
+    @KafkaListener(topics = "#{klassifikasjonssystemTopicName}")
     public void processMessage(ConsumerRecord<String, String> consumerRecord) {
         this.resourceCache.add(consumerRecord);
     }
+
 }

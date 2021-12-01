@@ -1,7 +1,9 @@
+fint:
+  org-id: "testOrgId"
 spring:
   kafka:
+    bootstrap-servers: localhost:29092
     consumer:
-      bootstrap-servers: localhost:29092
       group-id: group_id
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
@@ -12,7 +14,6 @@ spring:
             trusted:
               packages: "*"
     producer:
-      bootstrap-servers: localhost:29092
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 server:

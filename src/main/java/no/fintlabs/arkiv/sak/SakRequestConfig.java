@@ -1,6 +1,7 @@
 package no.fintlabs.arkiv.sak;
 
 import no.fintlabs.kafka.FintKafkaReplyTemplateFactory;
+import no.fintlabs.kafka.TopicService;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -20,41 +21,35 @@ import java.util.Map;
 @Configuration
 public class SakRequestConfig {
 
-    // TODO: 23/11/2021 prefix for query param? eg: .by.
-    public static final String requestTopicSystemId = "request.arkiv.noark.sak.systemid";
-    public static final String requestTopicMappeId = "request.arkiv.noark.sak.mappeid";
+    private static final String sakResourceReference = "arkiv.noark.sak";
 
-    @Bean
-    public NewTopic requestTopicSystemId() {
-        return TopicBuilder.name(requestTopicSystemId)
-                .partitions(3)
-                .replicas(3)
-                .build();
+    @Bean()
+    @Qualifier("sakRequestTopicSystemId")
+    public NewTopic sakRequestTopicSystemId(TopicService topicService) {
+        return topicService.createRequestTopic(sakResourceReference, "systemid");
     }
 
     @Bean
-    public NewTopic requestTopicMappeId() {
-        return TopicBuilder.name(requestTopicMappeId)
-                .partitions(3)
-                .replicas(3)
-                .build();
+    @Qualifier("sakRequestTopicMappeId")
+    public NewTopic sakRequestTopicMappeId(TopicService topicService) {
+        return topicService.createRequestTopic(sakResourceReference, "mappeid");
     }
 
     @Bean
-    public NewTopic replyTopic() {
-        return TopicBuilder.name("reply.arkiv.noark.sak")
-                .partitions(3)
-                .replicas(3)
-                .build();
+    @Qualifier("sakReplyTopic")
+    public NewTopic sakReplyTopic(TopicService topicService) {
+        return topicService.createReplyTopic(sakResourceReference);
     }
 
     @Bean
     @Qualifier("sakReplyingKafkaTemplate")
-    public ReplyingKafkaTemplate<String, Object, String> sakReplyingKafkaTemplate() {
+    public ReplyingKafkaTemplate<String, Object, String> sakReplyingKafkaTemplate(
+            @Qualifier("sakReplyTopic") NewTopic sakReplyTopic
+    ) {
         ReplyingKafkaTemplate<String, Object, String> sakReplyingKafkaTemplate = FintKafkaReplyTemplateFactory.create(
                 this.createProducerConfigs(),
                 this.createConsumerConfigs(),
-                "reply.arkiv.noark.sak"
+                sakReplyTopic.name()
         );
         sakReplyingKafkaTemplate.setDefaultReplyTimeout(Duration.ofSeconds(30));
         sakReplyingKafkaTemplate.setSharedReplyTopic(true);
