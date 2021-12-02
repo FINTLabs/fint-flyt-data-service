@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import no.fint.model.resource.arkiv.noark.SakResource;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,12 +21,13 @@ public class SakController {
 
     @Scheduled(initialDelay = 5000, fixedDelay = 200000)
     public void test() {
-        this.getSak(String.valueOf(1414));
+        this.getSak("21", "1");
     }
 
-    @GetMapping("systemid")
-    public SakResource getSak(String systemId) {
-        return sakRequestService.getBySystemId(systemId);
+    // TODO: 24/11/2021 Filter only on mappeid  mappeid/20/12456
+    @GetMapping("mappeid/{caseYear}/{caseNumber}")
+    public SakResource getSak(@PathVariable String caseYear, @PathVariable String caseNumber) {
+        return sakRequestService.getByMappeId(caseYear + '/' + caseNumber);
     }
 
 }
