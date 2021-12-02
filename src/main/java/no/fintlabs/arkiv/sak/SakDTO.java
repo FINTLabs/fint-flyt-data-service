@@ -1,6 +1,8 @@
 package no.fintlabs.arkiv.sak;
 
 import lombok.Data;
+import no.fint.model.arkiv.kodeverk.Saksstatus;
+import no.fint.model.arkiv.noark.Arkivressurs;
 
 import java.util.Date;
 
@@ -9,8 +11,8 @@ public class SakDTO {
 
     private String caseNumber;
     private Date Date;
-    private String Status;
+    private Saksstatus Status;
     private String Title;
-    private String Caseworker;
+    private Arkivressurs Caseworker;
 
 }
