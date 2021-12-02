@@ -43,7 +43,9 @@ dependencies {
     implementation 'no.fint:fint-model-resource:0.4.1'
     implementation("no.fint:fint-arkiv-resource-model-java:3.9.0")
     implementation("no.fint:fint-administrasjon-resource-model-java:3.9.0")
-    implementation("no.fintlabs:fint-kafka:0.0.2-rc-15")
+    implementation("no.fintlabs:fint-kafka:0.0.2-rc-17")
+
+    implementation 'org.apache.commons:commons-lang3:3.9'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'io.projectreactor:reactor-test'
