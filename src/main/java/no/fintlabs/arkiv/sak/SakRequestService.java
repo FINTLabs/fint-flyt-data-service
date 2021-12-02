@@ -14,26 +14,14 @@ import org.springframework.stereotype.Service;
 public class SakRequestService {
 
     private final ReplyingKafkaTemplate<String, Object, String> sakReplyingKafkaTemplate;
-    private final NewTopic sakRequestTopicSystemId;
     private final NewTopic sakRequestTopicMappeId;
 
     public SakRequestService(
             @Qualifier("sakReplyingKafkaTemplate") ReplyingKafkaTemplate<String, Object, String> sakReplyingKafkaTemplate,
-            @Qualifier("sakRequestTopicSystemId") NewTopic sakRequestTopicSystemId,
             @Qualifier("sakRequestTopicMappeId") NewTopic sakRequestTopicMappeId
     ) {
         this.sakReplyingKafkaTemplate = sakReplyingKafkaTemplate;
-        this.sakRequestTopicSystemId = sakRequestTopicSystemId;
         this.sakRequestTopicMappeId = sakRequestTopicMappeId;
-    }
-
-    public SakResource getBySystemId(String systemId) {
-        return FintKafkaRequestReplyUtil.get(new RequestReplyOperationArgs<>(
-                this.sakRequestTopicSystemId.name(),
-                systemId,
-                sakReplyingKafkaTemplate,
-                SakResource.class
-        ));
     }
 
     public SakResource getByMappeId(String mappeId) {

@@ -23,12 +23,6 @@ public class SakRequestConfig {
 
     private static final String sakResourceReference = "arkiv.noark.sak";
 
-    @Bean()
-    @Qualifier("sakRequestTopicSystemId")
-    public NewTopic sakRequestTopicSystemId(TopicService topicService) {
-        return topicService.createRequestTopic(sakResourceReference, "systemid");
-    }
-
     @Bean
     @Qualifier("sakRequestTopicMappeId")
     public NewTopic sakRequestTopicMappeId(TopicService topicService) {
