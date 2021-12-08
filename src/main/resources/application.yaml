@@ -1,5 +1,5 @@
 fint:
-  org-id: "fintlabs.no"
+  org-id: fintlabs.no
 spring:
   kafka:
     bootstrap-servers: localhost:29092
