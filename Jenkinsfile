@@ -9,11 +9,11 @@ pipeline {
             }
         }
         stage('Publish') {
-            when { branch 'master' }
+            when { branch 'main' }
             steps {
-                sh "docker tag ${GIT_COMMIT} fintlabsacr.azurecr.io/kunde-portal:build.${BUILD_NUMBER}_${GIT_COMMIT}"
+                sh "docker tag ${GIT_COMMIT} fintlabsacr.azurecr.io/fint-skjema-data-service:build.${BUILD_NUMBER}_${GIT_COMMIT}"
                 withDockerRegistry([credentialsId: 'fintlabsacr.azurecr.io', url: 'https://fintlabsacr.azurecr.io']) {
-                    sh "docker push fintlabsacr.azurecr.io/kunde-portal:build.${BUILD_NUMBER}_${GIT_COMMIT}"
+                    sh "docker push fintlabsacr.azurecr.io/fint-skjema-data-service:build.${BUILD_NUMBER}_${GIT_COMMIT}"
                 }
                 /**
                  * Uncomment to auto deploy to your prefered environment
