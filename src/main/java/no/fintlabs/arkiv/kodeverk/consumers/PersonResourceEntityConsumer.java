@@ -1,38 +1,55 @@
 package no.fintlabs.arkiv.kodeverk.consumers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
+import no.fint.model.resource.Link;
 import no.fint.model.resource.felles.PersonResource;
-import no.fintlabs.arkiv.kodeverk.ResourceCache;
-import no.fintlabs.kafka.TopicNameService;
+import no.fintlabs.kafka.consumer.EntityConsumer;
+import no.fintlabs.kafka.consumer.cache.FintCacheManager;
+import no.fintlabs.kafka.topic.DomainContext;
+import no.fintlabs.kafka.topic.TopicNameService;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.context.annotation.Bean;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
-@Slf4j
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 @Component
-public class PersonResourceEntityConsumer {
+public class PersonResourceEntityConsumer extends EntityConsumer<PersonResource> {
 
-    @Getter
-    private final ResourceCache<PersonResource> resourceCache;
+    protected PersonResourceEntityConsumer(ObjectMapper objectMapper, FintCacheManager fintCacheManager) {
+        super(objectMapper, fintCacheManager);
+    }
 
-    public PersonResourceEntityConsumer(ObjectMapper mapper) {
-        this.resourceCache = new ResourceCache<>(
-                personalressursResource -> personalressursResource.getFodselsnummer().getIdentifikatorverdi(),
-                mapper,
-                PersonResource.class
-        );
+    @Override
+    protected String getResourceReference() {
+        return "administrasjon.personal.person";
+    }
+
+    @Override
+    protected Class<PersonResource> getResourceClass() {
+        return PersonResource.class;
+    }
+
+    @Override
+    protected List<String> getKeys(PersonResource resource) {
+        return Stream.concat(
+                Stream.of(resource.getFodselsnummer().getIdentifikatorverdi()),
+                resource.getSelfLinks().stream().map(Link::getHref)
+        ).collect(Collectors.toList());
     }
 
     @Bean
     String personResourceEntityTopicName(TopicNameService topicNameService) {
-        return topicNameService.generateEntityTopicName("administrasjon.personal.person");
+        return topicNameService.generateEntityTopicName(DomainContext.SKJEMA, this.getResourceReference());
     }
 
+    @Override
     @KafkaListener(topics = "#{personResourceEntityTopicName}")
-    public void processMessage(ConsumerRecord<String, String> consumerRecord) {
-        this.resourceCache.add(consumerRecord);
+    protected void consume(ConsumerRecord<String, String> consumerRecord) {
+        super.processMessage(consumerRecord);
     }
+
 }

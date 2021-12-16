@@ -8,12 +8,9 @@ import no.fint.model.resource.arkiv.kodeverk.SaksstatusResource;
 import no.fint.model.resource.arkiv.noark.ArkivressursResource;
 import no.fint.model.resource.arkiv.noark.SakResource;
 import no.fint.model.resource.felles.PersonResource;
-import no.fintlabs.arkiv.kodeverk.consumers.ArkivressursResourceEntityConsumer;
-import no.fintlabs.arkiv.kodeverk.consumers.PersonResourceEntityConsumer;
-import no.fintlabs.arkiv.kodeverk.consumers.PersonalressursResourceEntityConsumer;
-import no.fintlabs.arkiv.kodeverk.consumers.SaksstatusConsumer;
 import no.fintlabs.arkiv.sak.model.SakDTO;
 import no.fintlabs.arkiv.sak.model.SaksansvarligDto;
+import no.fintlabs.kafka.consumer.cache.FintCacheManager;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -21,24 +18,12 @@ import java.util.Optional;
 @Service
 public class SakMapper {
 
-    private final SaksstatusConsumer saksstatusConsumer;
-    private final ArkivressursResourceEntityConsumer arkivressursResourceEntityConsumer;
-    private final PersonalressursResourceEntityConsumer personalressursResourceEntityConsumer;
-    private final PersonResourceEntityConsumer personResourceEntityConsumer;
     private final ObjectMapper objectMapper;
+    private final FintCacheManager fintCacheManager;
 
-    private SakMapper(
-            ObjectMapper objectMapper,
-            SaksstatusConsumer saksstatusConsumer,
-            ArkivressursResourceEntityConsumer arkivressursResourceEntityConsumer,
-            PersonalressursResourceEntityConsumer personalressursResourceEntityConsumer,
-            PersonResourceEntityConsumer personResourceEntityConsumer
-    ) {
+    private SakMapper(ObjectMapper objectMapper, FintCacheManager fintCacheManager) {
         this.objectMapper = objectMapper;
-        this.saksstatusConsumer = saksstatusConsumer;
-        this.arkivressursResourceEntityConsumer = arkivressursResourceEntityConsumer;
-        this.personalressursResourceEntityConsumer = personalressursResourceEntityConsumer;
-        this.personResourceEntityConsumer = personResourceEntityConsumer;
+        this.fintCacheManager = fintCacheManager;
     }
 
     public SakDTO toSakDTO(SakResource sakResource) {
@@ -56,7 +41,9 @@ public class SakMapper {
             throw new IllegalStateException("No saksstatus links for resource=" + sakResource);
         }
         String saksstatusHref = sakResource.getSaksstatus().get(0).getHref();
-        Optional<SaksstatusResource> saksstatusResource = this.saksstatusConsumer.getResourceCache().get(saksstatusHref);
+        Optional<SaksstatusResource> saksstatusResource = this.fintCacheManager
+                .getCache("arkiv.kodeverk.saksstatus", String.class, SaksstatusResource.class)
+                .get(saksstatusHref);
 
         return saksstatusResource
                 .map(resource -> this.objectMapper.convertValue(resource, Saksstatus.class))
@@ -86,7 +73,9 @@ public class SakMapper {
         }
         String saksansvarligHref = sakResource.getSaksansvarlig().get(0).getHref();
         // TODO: 08/12/2021 Gets a system id link with value=62, but the cache only contains links with Strings of names
-        return this.arkivressursResourceEntityConsumer.getResourceCache().get(saksansvarligHref)
+        return this.fintCacheManager
+                .getCache("arkiv.noark.arkivressurs", String.class, ArkivressursResource.class)
+                .get(saksansvarligHref)
                 .orElseThrow(() -> this.createNoCachedResourceException("arkivressurs", saksansvarligHref));
     }
 
@@ -95,7 +84,9 @@ public class SakMapper {
             this.throwNoLinkException(arkivressursResource, "personalressurs");
         }
         String personalRessursHref = arkivressursResource.getPersonalressurs().get(0).getHref();
-        PersonalressursResource personalressursResource = this.personalressursResourceEntityConsumer.getResourceCache().get(personalRessursHref)
+        PersonalressursResource personalressursResource = this.fintCacheManager
+                .getCache("administrasjon.personal.personalressurs", String.class, PersonalressursResource.class)
+                .get(personalRessursHref)
                 .orElseThrow(() -> this.createNoCachedResourceException("personalressurs", personalRessursHref));
 
         return this.getPersonResource(personalressursResource);
@@ -106,7 +97,9 @@ public class SakMapper {
             this.throwNoLinkException(personalressursResource, "person");
         }
         String personHref = personalressursResource.getPerson().get(0).getHref();
-        return this.personResourceEntityConsumer.getResourceCache().get(personHref)
+        return this.fintCacheManager
+                .getCache("administrasjon.personal.person", String.class, PersonResource.class)
+                .get(personHref)
                 .orElseThrow(() -> this.createNoCachedResourceException("person", personHref));
     }
 

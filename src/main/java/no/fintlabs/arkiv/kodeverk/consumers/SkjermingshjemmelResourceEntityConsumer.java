@@ -2,7 +2,7 @@ package no.fintlabs.arkiv.kodeverk.consumers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import no.fint.model.resource.Link;
-import no.fint.model.resource.administrasjon.personal.PersonalressursResource;
+import no.fint.model.resource.arkiv.kodeverk.SkjermingshjemmelResource;
 import no.fintlabs.kafka.consumer.EntityConsumer;
 import no.fintlabs.kafka.consumer.cache.FintCacheManager;
 import no.fintlabs.kafka.topic.DomainContext;
@@ -17,39 +17,39 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Component
-public class PersonalressursResourceEntityConsumer extends EntityConsumer<PersonalressursResource> {
+public class SkjermingshjemmelResourceEntityConsumer extends EntityConsumer<SkjermingshjemmelResource> {
 
-    protected PersonalressursResourceEntityConsumer(ObjectMapper objectMapper, FintCacheManager fintCacheManager) {
+    protected SkjermingshjemmelResourceEntityConsumer(ObjectMapper objectMapper, FintCacheManager fintCacheManager) {
         super(objectMapper, fintCacheManager);
     }
 
     @Override
     protected String getResourceReference() {
-        return "administrasjon.personal.personalressurs";
+        return "arkiv.kodeverk.skjermingshjemmel";
     }
 
     @Override
-    protected Class<PersonalressursResource> getResourceClass() {
-        return PersonalressursResource.class;
+    protected Class<SkjermingshjemmelResource> getResourceClass() {
+        return SkjermingshjemmelResource.class;
     }
 
     @Override
-    protected List<String> getKeys(PersonalressursResource resource) {
+    protected List<String> getKeys(SkjermingshjemmelResource resource) {
         return Stream.concat(
-                Stream.of(resource.getAnsattnummer().getIdentifikatorverdi()),
+                Stream.of(resource.getSystemId().getIdentifikatorverdi()),
                 resource.getSelfLinks().stream().map(Link::getHref)
         ).collect(Collectors.toList());
     }
 
     @Bean
-    String personalressursResourceEntityTopicName(TopicNameService topicNameService) {
+    String skjermingshjemmelResourceEntityTopicName(TopicNameService topicNameService) {
         return topicNameService.generateEntityTopicName(DomainContext.SKJEMA, this.getResourceReference());
     }
 
     @Override
-    @KafkaListener(topics = "#{personalressursResourceEntityTopicName}")
+    @KafkaListener(topics = "#{skjermingshjemmelResourceEntityTopicName}")
     protected void consume(ConsumerRecord<String, String> consumerRecord) {
-        super.processMessage(consumerRecord);
+        this.processMessage(consumerRecord);
     }
 
 }
