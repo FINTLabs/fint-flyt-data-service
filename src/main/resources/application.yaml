@@ -1,5 +1,9 @@
 fint:
   org-id: fintlabs.no
+  kafka:
+    cache:
+      defaultCacheEntryTimeToLiveMillis: 518400000
+      defaultCacheHeapSize: 1000000
 spring:
   kafka:
     bootstrap-servers: localhost:29092
@@ -9,4 +13,4 @@ server:
   port: 8081
 logging:
   level:
-    no.fintlabs.kafka.consumer.cache: WARN
+    no.fintlabs.kafka.consumer.cache: INFO
