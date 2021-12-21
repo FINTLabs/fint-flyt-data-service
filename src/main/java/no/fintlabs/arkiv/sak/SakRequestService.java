@@ -9,22 +9,24 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.kafka.requestreply.ReplyingKafkaTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @Slf4j
 public class SakRequestService {
 
-    private final ReplyingKafkaTemplate<String, Object, String> sakReplyingKafkaTemplate;
+    private final ReplyingKafkaTemplate<String, String, String> sakReplyingKafkaTemplate;
     private final NewTopic sakRequestTopicMappeId;
 
     public SakRequestService(
-            @Qualifier("sakReplyingKafkaTemplate") ReplyingKafkaTemplate<String, Object, String> sakReplyingKafkaTemplate,
+            @Qualifier("sakReplyingKafkaTemplate") ReplyingKafkaTemplate<String, String, String> sakReplyingKafkaTemplate,
             @Qualifier("sakRequestTopicMappeId") NewTopic sakRequestTopicMappeId
     ) {
         this.sakReplyingKafkaTemplate = sakReplyingKafkaTemplate;
         this.sakRequestTopicMappeId = sakRequestTopicMappeId;
     }
 
-    public SakResource getByMappeId(String mappeId) {
+    public Optional<SakResource> getByMappeId(String mappeId) {
         return FintKafkaRequestReplyUtil.get(new RequestReplyOperationArgs<>(
                 this.sakRequestTopicMappeId.name(),
                 mappeId,

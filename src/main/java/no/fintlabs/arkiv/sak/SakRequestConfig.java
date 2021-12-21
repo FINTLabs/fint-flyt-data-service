@@ -32,13 +32,13 @@ public class SakRequestConfig {
 
     @Bean
     @Qualifier("sakReplyingKafkaTemplate")
-    public ReplyingKafkaTemplate<String, Object, String> sakReplyingKafkaTemplate(
+    public ReplyingKafkaTemplate<String, String, String> sakReplyingKafkaTemplate(
             @Qualifier("sakReplyTopic") NewTopic sakReplyTopic,
-            ProducerFactory<String, Object> objectProducerFactory,
+            ProducerFactory<String, String> producerFactory,
             ConsumerFactory<String, String> consumerFactory
     ) {
-        ReplyingKafkaTemplate<String, Object, String> sakReplyingKafkaTemplate = FintKafkaReplyTemplateFactory.create(
-                objectProducerFactory,
+        ReplyingKafkaTemplate<String, String, String> sakReplyingKafkaTemplate = FintKafkaReplyTemplateFactory.create(
+                producerFactory,
                 consumerFactory,
                 sakReplyTopic.name()
         );
