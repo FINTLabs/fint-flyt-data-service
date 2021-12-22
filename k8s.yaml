@@ -36,7 +36,7 @@ spec:
       restartPolicy: Always
       containers:
         #- image: fintlabsacr.azurecr.io/fint-skjema-data-service:build.${BUILD_NUMBER}_${GIT_COMMIT}
-        - image: fintlabsacr.azurecr.io/fint-skjema-data-service:build.7_04d6f939701b69264fa92980ffff3f3f93048d91
+        - image: fintlabsacr.azurecr.io/fint-skjema-data-service:build.10_48fc8f8474a97b9ddc5efc5f9c9c5f64350570e6
           name: fint-skjema-data-service
           resources:
             limits:
@@ -49,6 +49,7 @@ spec:
             - containerPort: 8081
           env:
             - {name: TZ, value: Europe/Oslo}
-            - {name: JAVA_TOOL_OPTIONS, value: '-XX:+ExitOnOutOfMemoryError -Xmx920M -verbose:gc'}
+            #- {name: JAVA_TOOL_OPTIONS, value: '-XX:+ExitOnOutOfMemoryError -Xmx920M -verbose:gc'}
+            - {name: JAVA_TOOL_OPTIONS, value: '-XX:+ExitOnOutOfMemoryError -Xmx920M'}
             - {name: spring.kafka.bootstrap-servers, value: 'kafka-0.kafka-headless.default.svc.cluster.local:9092'}
             - {name: logging.level.no.fintlabs.arkiv, value: info}
