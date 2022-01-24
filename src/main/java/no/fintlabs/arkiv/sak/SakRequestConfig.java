@@ -3,7 +3,7 @@ package no.fintlabs.arkiv.sak;
 import no.fintlabs.kafka.FintKafkaReplyTemplateFactory;
 import no.fintlabs.kafka.topic.DomainContext;
 import no.fintlabs.kafka.topic.TopicService;
-import org.apache.kafka.clients.admin.NewTopic;
+import org.apache.kafka.clients.admin.TopicDescription;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,20 +20,20 @@ public class SakRequestConfig {
 
     @Bean
     @Qualifier("sakRequestTopicMappeId")
-    public NewTopic sakRequestTopicMappeId(TopicService topicService) {
-        return topicService.createRequestTopic(DomainContext.SKJEMA, sakResourceReference, false, "mappeid");
+    public TopicDescription sakRequestTopicMappeId(TopicService topicService) {
+        return topicService.getOrCreateRequestTopic(DomainContext.SKJEMA, sakResourceReference, false, "mappeid");
     }
 
     @Bean
     @Qualifier("sakReplyTopic")
-    public NewTopic sakReplyTopic(TopicService topicService) {
-        return topicService.createReplyTopic(DomainContext.SKJEMA, sakResourceReference);
+    public TopicDescription sakReplyTopic(TopicService topicService) {
+        return topicService.getOrCreateReplyTopic(DomainContext.SKJEMA, sakResourceReference);
     }
 
     @Bean
     @Qualifier("sakReplyingKafkaTemplate")
     public ReplyingKafkaTemplate<String, String, String> sakReplyingKafkaTemplate(
-            @Qualifier("sakReplyTopic") NewTopic sakReplyTopic,
+            @Qualifier("sakReplyTopic") TopicDescription sakReplyTopic,
             ProducerFactory<String, String> producerFactory,
             ConsumerFactory<String, String> consumerFactory
     ) {

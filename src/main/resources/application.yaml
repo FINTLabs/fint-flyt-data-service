@@ -1,6 +1,9 @@
 fint:
   org-id: fintlabs.no
+  application-id: fint-skjema-data-service
   kafka:
+    logging:
+      logToKafka: true
     cache:
       defaultCacheEntryTimeToLiveMillis: 518400000
       defaultCacheHeapSize: 1000000
