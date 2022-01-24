@@ -11,17 +11,16 @@ import no.fint.model.resource.arkiv.noark.SakResource;
 import no.fint.model.resource.felles.PersonResource;
 import no.fintlabs.arkiv.sak.model.SakDTO;
 import no.fintlabs.arkiv.sak.model.SaksansvarligDto;
-import no.fintlabs.exceptions.NoSuchLinkException;
 import no.fintlabs.kafka.consumer.cache.FintCacheManager;
 import no.fintlabs.kafka.consumer.cache.exceptions.NoSuchCacheEntryException;
+import no.fintlabs.kafka.util.links.NoSuchLinkException;
+import no.fintlabs.kafka.util.links.ResourceLinkUtil;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static no.fintlabs.arkiv.ResourceLinkUtil.getFirstLink;
 
 @Slf4j
 @Service
@@ -87,19 +86,19 @@ public class SakMapper {
     }
 
     private String getSaksstatusResourceHref(SakResource sakResource) {
-        return getFirstLink(sakResource::getSaksstatus, "SakResource", "saksstatus");
+        return ResourceLinkUtil.getFirstLink(sakResource::getSaksstatus, sakResource, "Saksstatus");
     }
 
     private String getSaksansvarligHref(SakResource sakResource) {
-        return getFirstLink(sakResource::getSaksansvarlig, "SakResource", "saksansvarlig");
+        return ResourceLinkUtil.getFirstLink(sakResource::getSaksansvarlig, sakResource, "Saksansvarlig");
     }
 
     private String getPersonalressursResourceHref(ArkivressursResource arkivressursResource) {
-        return getFirstLink(arkivressursResource::getPersonalressurs, "ArkivressursResource", "personalressurs");
+        return ResourceLinkUtil.getFirstLink(arkivressursResource::getPersonalressurs, arkivressursResource, "Personalressurs");
     }
 
     private String getPersonResourceHref(PersonalressursResource personalressursResource) {
-        return getFirstLink(personalressursResource::getPerson, "PersonalressursResource", "person");
+        return ResourceLinkUtil.getFirstLink(personalressursResource::getPerson, personalressursResource, "Person");
     }
 
     private SaksstatusResource getSaksstatusResource(String saksstatusResourceHref) {
