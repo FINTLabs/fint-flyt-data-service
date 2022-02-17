@@ -1,3 +1,17 @@
+apiVersion: onepassword.com/v1
+kind: OnePasswordItem
+metadata:
+  name: viken-no-fint-skjema-data-service
+spec:
+  itemPath: "vaults/aks-alpha-vault/items/viken-no-fint-skjema-data-service"
+---
+apiVersion: onepassword.com/v1
+kind: OnePasswordItem
+metadata:
+  name: aiven-kafka-certificates
+spec:
+  itemPath: "vaults/aks-alpha-vault/items/aiven-kafka-certificates"
+---
 apiVersion: v1
 kind: Service
 metadata:
@@ -8,8 +22,8 @@ metadata:
   name: fint-skjema-data-service
 spec:
   ports:
-    - name: "8081"
-      port: 8081
+    - name: "8080"
+      port: 8080
   type: LoadBalancer
   selector:
     io.kompose.service: fint-skjema-data-service
@@ -34,22 +48,30 @@ spec:
         io.kompose.service: fint-skjema-data-service
     spec:
       restartPolicy: Always
+      volumes:
+        - name: credentials
+          secret:
+            secretName: aiven-kafka-certificates
       containers:
-        #- image: fintlabsacr.azurecr.io/fint-skjema-data-service:build.${BUILD_NUMBER}_${GIT_COMMIT}
-        - image: fintlabsacr.azurecr.io/fint-skjema-data-service:build.10_48fc8f8474a97b9ddc5efc5f9c9c5f64350570e6
+        - image: fintlabsacr.azurecr.io/fint-skjema-data-service:dummy
           name: fint-skjema-data-service
+          volumeMounts:
+            - name: credentials
+              mountPath: /credentials
           resources:
             limits:
               memory: "1024Mi"
               cpu: "1"
             requests:
-              memory: "128Mi"
+              memory: "256"
               cpu: "100m"
           ports:
-            - containerPort: 8081
+            - containerPort: 8080
+          envFrom:
+          - secretRef:
+              name: "viken-no-fint-skjema-data-service"
           env:
             - {name: TZ, value: Europe/Oslo}
             #- {name: JAVA_TOOL_OPTIONS, value: '-XX:+ExitOnOutOfMemoryError -Xmx920M -verbose:gc'}
             - {name: JAVA_TOOL_OPTIONS, value: '-XX:+ExitOnOutOfMemoryError -Xmx920M'}
-            - {name: spring.kafka.bootstrap-servers, value: 'kafka-0.kafka-headless.default.svc.cluster.local:9092'}
             - {name: logging.level.no.fintlabs.arkiv, value: info}
