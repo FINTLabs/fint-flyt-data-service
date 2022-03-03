@@ -3,7 +3,7 @@ kind: OnePasswordItem
 metadata:
   name: viken-no-fint-skjema-data-service
 spec:
-  itemPath: "vaults/aks-alpha-vault/items/viken-no-fint-skjema-data-service"
+  itemPath: "vaults/aks-alpha-vault/items/aiven-kafka"
 ---
 apiVersion: onepassword.com/v1
 kind: OnePasswordItem
@@ -69,7 +69,7 @@ spec:
             - containerPort: 8080
           envFrom:
           - secretRef:
-              name: "viken-no-fint-skjema-data-service"
+              name: "aiven-kafka"
           env:
             - {name: TZ, value: Europe/Oslo}
             #- {name: JAVA_TOOL_OPTIONS, value: '-XX:+ExitOnOutOfMemoryError -Xmx920M -verbose:gc'}
