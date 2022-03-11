@@ -7,7 +7,7 @@ plugins {
 
 group = 'no.fintlabs'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '11'
+sourceCompatibility = '17'
 
 configurations {
     compileOnly {
@@ -33,7 +33,12 @@ dependencies {
     //implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
     //implementation 'org.springframework.boot:spring-boot-starter-security'
     //implementation 'org.apache.kafka:kafka-streams'
-    implementation 'org.springframework.kafka:spring-kafka'
+    implementation 'org.springframework.kafka:spring-kafka:2.8.3'
+
+    implementation 'org.springframework.boot:spring-boot-starter-cache'
+    implementation 'javax.cache:cache-api'
+    implementation 'org.ehcache:ehcache:3.1.0'
+    implementation 'net.sf.ehcache:ehcache:2.10.9.2'
 
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
@@ -43,7 +48,7 @@ dependencies {
     implementation 'no.fint:fint-model-resource:0.4.1'
     implementation("no.fint:fint-arkiv-resource-model-java:3.9.0")
     implementation("no.fint:fint-administrasjon-resource-model-java:3.9.0")
-    implementation("no.fintlabs:fint-kafka:0.0.2-rc-54")
+    implementation("no.fintlabs:fint-kafka:1.1.0")
 
     implementation 'org.apache.commons:commons-lang3:3.9'
     implementation 'org.apache.commons:commons-collections4:4.0'

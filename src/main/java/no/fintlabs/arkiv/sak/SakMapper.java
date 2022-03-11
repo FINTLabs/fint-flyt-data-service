@@ -11,10 +11,10 @@ import no.fint.model.resource.arkiv.noark.SakResource;
 import no.fint.model.resource.felles.PersonResource;
 import no.fintlabs.arkiv.sak.model.SakDTO;
 import no.fintlabs.arkiv.sak.model.SaksansvarligDto;
-import no.fintlabs.kafka.consumer.cache.FintCacheManager;
-import no.fintlabs.kafka.consumer.cache.exceptions.NoSuchCacheEntryException;
-import no.fintlabs.kafka.util.links.NoSuchLinkException;
-import no.fintlabs.kafka.util.links.ResourceLinkUtil;
+import no.fintlabs.cache.FintCacheManager;
+import no.fintlabs.cache.exceptions.NoSuchCacheEntryException;
+import no.fintlabs.links.NoSuchLinkException;
+import no.fintlabs.links.ResourceLinkUtil;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;

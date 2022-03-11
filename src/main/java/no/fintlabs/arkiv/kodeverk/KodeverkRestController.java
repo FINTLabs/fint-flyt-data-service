@@ -4,7 +4,7 @@ import no.fint.model.resource.arkiv.kodeverk.*;
 import no.fint.model.resource.arkiv.noark.AdministrativEnhetResource;
 import no.fint.model.resource.arkiv.noark.ArkivdelResource;
 import no.fint.model.resource.arkiv.noark.KlassifikasjonssystemResource;
-import no.fintlabs.kafka.consumer.cache.FintCacheManager;
+import no.fintlabs.cache.FintCacheManager;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;

@@ -1,5 +1,6 @@
-package no.fintlabs.arkiv;//package no.fintlabs.integration;
+package no.fintlabs.arkiv;
 
+import no.fint.model.resource.FintLinks;
 import no.fint.model.resource.administrasjon.personal.PersonalressursResource;
 import no.fint.model.resource.arkiv.kodeverk.*;
 import no.fint.model.resource.arkiv.noark.AdministrativEnhetResource;
@@ -7,157 +8,119 @@ import no.fint.model.resource.arkiv.noark.ArkivdelResource;
 import no.fint.model.resource.arkiv.noark.ArkivressursResource;
 import no.fint.model.resource.arkiv.noark.KlassifikasjonssystemResource;
 import no.fint.model.resource.felles.PersonResource;
-import no.fintlabs.kafka.consumer.EntityConsumerFactory;
-import no.fintlabs.kafka.topic.DomainContext;
-import no.fintlabs.kafka.util.links.ResourceLinkUtil;
+import no.fintlabs.cache.FintCache;
+import no.fintlabs.cache.FintCacheManager;
+import no.fintlabs.kafka.entity.EntityTopicNameParameters;
+import no.fintlabs.kafka.entity.FintKafkaEntityConsumerFactory;
+import no.fintlabs.links.ResourceLinkUtil;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.kafka.listener.CommonLoggingErrorHandler;
 import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
 
 @Configuration
 public class EntityConsumersConfiguration {
 
-    @Bean
-    ConcurrentMessageListenerContainer<String, String> administrativEnhetResourceEntityConsumer(EntityConsumerFactory entityConsumerFactory) {
-        return entityConsumerFactory.createEntityConsumer(
-                DomainContext.SKJEMA,
-                "arkiv.noark.administrativenhet",
-                AdministrativEnhetResource.class,
-                ResourceLinkUtil::getSelfLinks,
-                true
+    @Value("${fint.org-id}")
+    private String orgId;
+
+    private final FintCacheManager fintCacheManager;
+    private final FintKafkaEntityConsumerFactory entityConsumerFactory;
+
+
+    public EntityConsumersConfiguration(FintCacheManager fintCacheManager, FintKafkaEntityConsumerFactory entityConsumerFactory) {
+        this.fintCacheManager = fintCacheManager;
+        this.entityConsumerFactory = entityConsumerFactory;
+    }
+
+    private <T extends FintLinks> ConcurrentMessageListenerContainer<String, T> createCacheConsumer(
+            String resourceReference,
+            Class<T> resourceClass
+    ) {
+        FintCache<String, T> cache = fintCacheManager.createCache(
+                resourceReference,
+                String.class,
+                resourceClass
+        );
+        return entityConsumerFactory.createConsumer(
+                EntityTopicNameParameters.builder()
+                        .orgId(orgId)
+                        .domainContext("skjema")
+                        .resource(resourceReference)
+                        .build(),
+                resourceClass,
+                consumerRecord -> cache.put(
+                        ResourceLinkUtil.getSelfLinks(consumerRecord.value()),
+                        consumerRecord.value()
+                ),
+                new CommonLoggingErrorHandler()
         );
     }
 
     @Bean
-    ConcurrentMessageListenerContainer<String, String> arkivdelResourceEntityConsumer(EntityConsumerFactory entityConsumerFactory) {
-        return entityConsumerFactory.createEntityConsumer(
-                DomainContext.SKJEMA,
-                "arkiv.noark.arkivdel",
-                ArkivdelResource.class,
-                ResourceLinkUtil::getSelfLinks,
-                true
-        );
+    ConcurrentMessageListenerContainer<String, AdministrativEnhetResource> administrativEnhetResourceEntityConsumer() {
+        return createCacheConsumer("arkiv.noark.administrativenhet", AdministrativEnhetResource.class);
     }
 
     @Bean
-    ConcurrentMessageListenerContainer<String, String> arkivressursResourceEntityConsumer(EntityConsumerFactory entityConsumerFactory) {
-        return entityConsumerFactory.createEntityConsumer(
-                DomainContext.SKJEMA,
-                "arkiv.noark.arkivressurs",
-                ArkivressursResource.class,
-                ResourceLinkUtil::getSelfLinks,
-                true
-        );
+    ConcurrentMessageListenerContainer<String, ArkivdelResource> arkivdelResourceEntityConsumer() {
+        return createCacheConsumer("arkiv.noark.arkivdel", ArkivdelResource.class);
     }
 
     @Bean
-    ConcurrentMessageListenerContainer<String, String> dokumentStatusResourceEntityConsumer(EntityConsumerFactory entityConsumerFactory) {
-        return entityConsumerFactory.createEntityConsumer(
-                DomainContext.SKJEMA,
-                "arkiv.kodeverk.dokumentstatus",
-                DokumentStatusResource.class,
-                ResourceLinkUtil::getSelfLinks,
-                true
-        );
+    ConcurrentMessageListenerContainer<String, ArkivressursResource> arkivressursResourceEntityConsumer() {
+        return createCacheConsumer("arkiv.noark.arkivressurs", ArkivressursResource.class);
     }
 
     @Bean
-    ConcurrentMessageListenerContainer<String, String> dokumentTypeResourceEntityConsumer(EntityConsumerFactory entityConsumerFactory) {
-        return entityConsumerFactory.createEntityConsumer(
-                DomainContext.SKJEMA,
-                "arkiv.kodeverk.dokumenttype",
-                DokumentTypeResource.class,
-                ResourceLinkUtil::getSelfLinks,
-                true
-        );
+    ConcurrentMessageListenerContainer<String, DokumentStatusResource> dokumentStatusResourceEntityConsumer() {
+        return createCacheConsumer("arkiv.kodeverk.dokumentstatus", DokumentStatusResource.class);
     }
 
     @Bean
-    ConcurrentMessageListenerContainer<String, String> klassifikasjonssystemResourceEntityConsumer(EntityConsumerFactory entityConsumerFactory) {
-        return entityConsumerFactory.createEntityConsumer(
-                DomainContext.SKJEMA,
-                "arkiv.noark.klassifikasjonssystem",
-                KlassifikasjonssystemResource.class,
-                ResourceLinkUtil::getSelfLinks,
-                true
-        );
+    ConcurrentMessageListenerContainer<String, DokumentTypeResource> dokumentTypeResourceEntityConsumer() {
+        return createCacheConsumer("arkiv.kodeverk.dokumenttype", DokumentTypeResource.class);
     }
 
     @Bean
-    ConcurrentMessageListenerContainer<String, String> klassifikasjonstypeResourceEntityConsumer(EntityConsumerFactory entityConsumerFactory) {
-        return entityConsumerFactory.createEntityConsumer(
-                DomainContext.SKJEMA,
-                "arkiv.kodeverk.klassifikasjonstype",
-                KlassifikasjonstypeResource.class,
-                ResourceLinkUtil::getSelfLinks,
-                true
-        );
+    ConcurrentMessageListenerContainer<String, KlassifikasjonssystemResource> klassifikasjonssystemResourceEntityConsumer() {
+        return createCacheConsumer("arkiv.noark.klassifikasjonssystem", KlassifikasjonssystemResource.class);
     }
 
     @Bean
-    ConcurrentMessageListenerContainer<String, String> rolleResourceEntityConsumer(EntityConsumerFactory entityConsumerFactory) {
-        return entityConsumerFactory.createEntityConsumer(
-                DomainContext.SKJEMA,
-                "arkiv.kodeverk.rolle",
-                RolleResource.class,
-                ResourceLinkUtil::getSelfLinks,
-                true
-        );
+    ConcurrentMessageListenerContainer<String, KlassifikasjonstypeResource> klassifikasjonstypeResourceEntityConsumer() {
+        return createCacheConsumer("arkiv.kodeverk.klassifikasjonstype", KlassifikasjonstypeResource.class);
     }
 
     @Bean
-    ConcurrentMessageListenerContainer<String, String> saksstatusResourceEntityConsumer(EntityConsumerFactory entityConsumerFactory) {
-        return entityConsumerFactory.createEntityConsumer(
-                DomainContext.SKJEMA,
-                "arkiv.kodeverk.saksstatus",
-                SaksstatusResource.class,
-                ResourceLinkUtil::getSelfLinks,
-                true
-        );
+    ConcurrentMessageListenerContainer<String, RolleResource> rolleResourceEntityConsumer() {
+        return createCacheConsumer("arkiv.kodeverk.rolle", RolleResource.class);
     }
 
     @Bean
-    ConcurrentMessageListenerContainer<String, String> skjermingshjemmelResourceEntityConsumer(EntityConsumerFactory entityConsumerFactory) {
-        return entityConsumerFactory.createEntityConsumer(
-                DomainContext.SKJEMA,
-                "arkiv.kodeverk.skjermingshjemmel",
-                SkjermingshjemmelResource.class,
-                ResourceLinkUtil::getSelfLinks,
-                true
-        );
+    ConcurrentMessageListenerContainer<String, SaksstatusResource> saksstatusResourceEntityConsumer() {
+        return createCacheConsumer("arkiv.kodeverk.saksstatus", SaksstatusResource.class);
     }
 
     @Bean
-    ConcurrentMessageListenerContainer<String, String> tilgangsrestriksjonResourceEntityConsumer(EntityConsumerFactory entityConsumerFactory) {
-        return entityConsumerFactory.createEntityConsumer(
-                DomainContext.SKJEMA,
-                "arkiv.kodeverk.tilgangsrestriksjon",
-                TilgangsrestriksjonResource.class,
-                ResourceLinkUtil::getSelfLinks,
-                true
-        );
+    ConcurrentMessageListenerContainer<String, SkjermingshjemmelResource> skjermingshjemmelResourceEntityConsumer() {
+        return createCacheConsumer("arkiv.kodeverk.skjermingshjemmel", SkjermingshjemmelResource.class);
     }
 
     @Bean
-    ConcurrentMessageListenerContainer<String, String> personalressursResourceEntityConsumer(EntityConsumerFactory entityConsumerFactory) {
-        return entityConsumerFactory.createEntityConsumer(
-                DomainContext.SKJEMA,
-                "administrasjon.personal.personalressurs",
-                PersonalressursResource.class,
-                ResourceLinkUtil::getSelfLinks,
-                true
-        );
+    ConcurrentMessageListenerContainer<String, TilgangsrestriksjonResource> tilgangsrestriksjonResourceEntityConsumer() {
+        return createCacheConsumer("arkiv.kodeverk.tilgangsrestriksjon", TilgangsrestriksjonResource.class);
     }
 
     @Bean
-    ConcurrentMessageListenerContainer<String, String> personResourceEntityConsumer(EntityConsumerFactory entityConsumerFactory) {
-        return entityConsumerFactory.createEntityConsumer(
-                DomainContext.SKJEMA,
-                "administrasjon.personal.person",
-                PersonResource.class,
-                ResourceLinkUtil::getSelfLinks,
-                true
-        );
+    ConcurrentMessageListenerContainer<String, PersonalressursResource> personalressursResourceEntityConsumer() {
+        return createCacheConsumer("administrasjon.personal.personalressurs", PersonalressursResource.class);
+    }
+
+    @Bean
+    ConcurrentMessageListenerContainer<String, PersonResource> personResourceEntityConsumer() {
+        return createCacheConsumer("administrasjon.personal.person", PersonResource.class);
     }
 
 }

@@ -12,8 +12,8 @@ import no.fint.model.resource.arkiv.noark.SakResource
 import no.fint.model.resource.felles.PersonResource
 import no.fintlabs.arkiv.sak.model.SakDTO
 import no.fintlabs.arkiv.sak.model.SaksansvarligDto
-import no.fintlabs.kafka.consumer.cache.FintCache
-import no.fintlabs.kafka.consumer.cache.FintCacheManager
+import no.fintlabs.cache.FintCache
+import no.fintlabs.cache.FintCacheManager
 import spock.lang.Specification
 
 import static java.util.Arrays.asList
