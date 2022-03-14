@@ -60,10 +60,10 @@ spec:
               mountPath: /credentials
           resources:
             limits:
-              memory: "1024Mi"
+              memory: "2048Mi"
               cpu: "1"
             requests:
-              memory: "256"
+              memory: "512Mi"
               cpu: "100m"
           ports:
             - containerPort: 8080
@@ -73,5 +73,5 @@ spec:
           env:
             - {name: TZ, value: Europe/Oslo}
             #- {name: JAVA_TOOL_OPTIONS, value: '-XX:+ExitOnOutOfMemoryError -Xmx920M -verbose:gc'}
-            - {name: JAVA_TOOL_OPTIONS, value: '-XX:+ExitOnOutOfMemoryError -Xmx920M'}
+            - {name: JAVA_TOOL_OPTIONS, value: '-XX:+ExitOnOutOfMemoryError -Xmx1840M'}
             - {name: logging.level.no.fintlabs.arkiv, value: info}
