@@ -89,11 +89,6 @@ public class EntityConsumersConfiguration {
     }
 
     @Bean
-    ConcurrentMessageListenerContainer<String, KlassifikasjonstypeResource> klassifikasjonstypeResourceEntityConsumer() {
-        return createCacheConsumer("arkiv.kodeverk.klassifikasjonstype", KlassifikasjonstypeResource.class);
-    }
-
-    @Bean
     ConcurrentMessageListenerContainer<String, RolleResource> rolleResourceEntityConsumer() {
         return createCacheConsumer("arkiv.kodeverk.rolle", RolleResource.class);
     }
@@ -111,6 +106,16 @@ public class EntityConsumersConfiguration {
     @Bean
     ConcurrentMessageListenerContainer<String, TilgangsrestriksjonResource> tilgangsrestriksjonResourceEntityConsumer() {
         return createCacheConsumer("arkiv.kodeverk.tilgangsrestriksjon", TilgangsrestriksjonResource.class);
+    }
+
+    @Bean
+    ConcurrentMessageListenerContainer<String, JournalStatusResource> journalStatusResourceEntityConsumer() {
+        return createCacheConsumer("arkiv.kodeverk.journalstatus", JournalStatusResource.class);
+    }
+
+    @Bean
+    ConcurrentMessageListenerContainer<String, VariantformatResource> variantformatResourceEntityConsumer() {
+        return createCacheConsumer("arkiv.kodeverk.variantformat", VariantformatResource.class);
     }
 
     @Bean
