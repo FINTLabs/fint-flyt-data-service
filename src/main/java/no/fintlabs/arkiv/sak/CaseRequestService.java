@@ -12,12 +12,12 @@ import java.util.Optional;
 
 @Service
 @Slf4j
-public class SakRequestService {
+public class CaseRequestService {
 
     private final RequestProducer<String, SakResource> requestProducer;
     private final RequestTopicNameParameters requestTopicNameParameters;
 
-    public SakRequestService(
+    public CaseRequestService(
             @Value("${fint.org-id}") String orgId,
             @Value("${fint.kafka.application-id}") String applicationId,
             ReplyTopicService replyTopicService,

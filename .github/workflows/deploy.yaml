@@ -8,7 +8,6 @@ env:
   REGISTRY_NAME: fintlabsacr
   ALPHA_CLUSTER_NAME: aks-alpha-fint-2021-11-18
   ALPHA_CLUSTER_RESOURCE_GROUP: rg-aks-alpha
-  NAMESPACE: default
   APP_NAME: fint-skjema-data-service
 
 jobs:
@@ -43,4 +42,4 @@ jobs:
             viken-no-k8s.yaml
           images: |
             ${{ env.REGISTRY_NAME }}.azurecr.io/${{ env.APP_NAME }}:${{ github.sha }}
-          namespace: ${{ env.NAMESPACE }}
+          namespace: viken-no
