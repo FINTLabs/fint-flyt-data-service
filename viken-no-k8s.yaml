@@ -28,6 +28,33 @@ spec:
   selector:
     io.kompose.service: fint-skjema-data-service
 ---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-fint-skjema-configuration-service
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  rules:
+    - host: "viken-no-skjema.vigoiks.no"
+      http:
+        paths:
+          - path: /api/kodeverk
+            pathType: Prefix
+            backend:
+              service:
+                name: fint-skjema-data-service
+                port:
+                  number: 8080
+          - path: /api/sak
+            pathType: Prefix
+            backend:
+              service:
+                name: fint-skjema-data-service
+                port:
+                  number: 8080
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -72,6 +99,5 @@ spec:
               name: "aiven-kafka"
           env:
             - {name: TZ, value: Europe/Oslo}
-            #- {name: JAVA_TOOL_OPTIONS, value: '-XX:+ExitOnOutOfMemoryError -Xmx920M -verbose:gc'}
             - {name: JAVA_TOOL_OPTIONS, value: '-XX:+ExitOnOutOfMemoryError -Xmx1840M'}
             - {name: logging.level.no.fintlabs.arkiv, value: info}

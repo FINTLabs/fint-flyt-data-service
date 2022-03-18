@@ -10,24 +10,24 @@ import no.fint.model.resource.arkiv.kodeverk.SaksstatusResource
 import no.fint.model.resource.arkiv.noark.ArkivressursResource
 import no.fint.model.resource.arkiv.noark.SakResource
 import no.fint.model.resource.felles.PersonResource
-import no.fintlabs.arkiv.sak.model.SakDTO
-import no.fintlabs.arkiv.sak.model.SaksansvarligDto
+import no.fintlabs.arkiv.sak.model.Case
+import no.fintlabs.arkiv.sak.model.CaseWorker
 import no.fintlabs.cache.FintCache
 import no.fintlabs.cache.FintCacheManager
 import spock.lang.Specification
 
 import static java.util.Arrays.asList
 
-class SakMapperSpec extends Specification {
+class CaseMapperSpec extends Specification {
 
-    SakMapper sakMapper
+    CaseMapper sakMapper
     Saksstatus saksstatus
 
     void setup() {
         sakMapper = createSakMapper()
     }
 
-    private SakMapper createSakMapper() {
+    private CaseMapper createSakMapper() {
         ObjectMapper objectMapper = Stub(ObjectMapper.class)
         FintCacheManager cacheManager = Stub(FintCacheManager.class)
 
@@ -51,7 +51,7 @@ class SakMapperSpec extends Specification {
         personCache.get("testPersonHref") >> createPersonResource()
         cacheManager.getCache("administrasjon.personal.person", String.class, PersonResource.class) >> personCache
 
-        return new SakMapper(objectMapper, cacheManager)
+        return new CaseMapper(objectMapper, cacheManager)
     }
 
     private Identifikator createIdentifikator(String value) {
@@ -93,7 +93,7 @@ class SakMapperSpec extends Specification {
         sakResource.getSaksansvarlig() >> asList(new Link("testarkivressursHref"))
 
         when:
-        SakDTO sakDTO = sakMapper.toSakDTO(sakResource)
+        Case sakDTO = sakMapper.toCase(sakResource)
 
         then:
         Objects.nonNull(sakDTO)
@@ -102,7 +102,7 @@ class SakMapperSpec extends Specification {
         sakDTO.getStatus() == saksstatus
         sakDTO.getTitle() == "testTittel"
 
-        SaksansvarligDto saksansvarligDto = sakDTO.getCaseworker()
+        CaseWorker saksansvarligDto = sakDTO.getCaseworker()
         Objects.nonNull(saksansvarligDto)
         saksansvarligDto.getKildesystemId() == "testArkivressursKildesystemId"
         saksansvarligDto.getSystemId() == "testArkivressursSystemId"

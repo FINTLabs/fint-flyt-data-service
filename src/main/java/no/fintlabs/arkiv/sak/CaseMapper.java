@@ -9,8 +9,8 @@ import no.fint.model.resource.arkiv.kodeverk.SaksstatusResource;
 import no.fint.model.resource.arkiv.noark.ArkivressursResource;
 import no.fint.model.resource.arkiv.noark.SakResource;
 import no.fint.model.resource.felles.PersonResource;
-import no.fintlabs.arkiv.sak.model.SakDTO;
-import no.fintlabs.arkiv.sak.model.SaksansvarligDto;
+import no.fintlabs.arkiv.sak.model.Case;
+import no.fintlabs.arkiv.sak.model.CaseWorker;
 import no.fintlabs.cache.FintCacheManager;
 import no.fintlabs.cache.exceptions.NoSuchCacheEntryException;
 import no.fintlabs.links.NoSuchLinkException;
@@ -24,24 +24,24 @@ import java.util.stream.Stream;
 
 @Slf4j
 @Service
-public class SakMapper {
+public class CaseMapper {
 
     private final ObjectMapper objectMapper;
     private final FintCacheManager fintCacheManager;
 
-    public SakMapper(ObjectMapper objectMapper, FintCacheManager fintCacheManager) {
+    public CaseMapper(ObjectMapper objectMapper, FintCacheManager fintCacheManager) {
         this.objectMapper = objectMapper;
         this.fintCacheManager = fintCacheManager;
     }
 
-    public SakDTO toSakDTO(SakResource sakResource) {
-        SakDTO sakDTO = new SakDTO();
-        sakDTO.setCaseNumber(sakResource.getMappeId().getIdentifikatorverdi());
-        sakDTO.setDate(sakResource.getSaksdato());
-        sakDTO.setTitle(sakResource.getTittel());
-        sakDTO.setStatus(this.getSaksstatus(sakResource));
-        sakDTO.setCaseworker(this.getSaksansvarlig(sakResource));
-        return sakDTO;
+    public Case toCase(SakResource sakResource) {
+        Case aCase = new Case();
+        aCase.setCaseNumber(sakResource.getMappeId().getIdentifikatorverdi());
+        aCase.setDate(sakResource.getSaksdato());
+        aCase.setTitle(sakResource.getTittel());
+        aCase.setStatus(this.getSaksstatus(sakResource));
+        aCase.setCaseworker(this.getSaksansvarlig(sakResource));
+        return aCase;
     }
 
     private Saksstatus getSaksstatus(SakResource sakResource) {
@@ -50,8 +50,8 @@ public class SakMapper {
         return this.objectMapper.convertValue(saksstatusResource, Saksstatus.class);
     }
 
-    private SaksansvarligDto getSaksansvarlig(SakResource sakResource) {
-        SaksansvarligDto saksansvarligDto = new SaksansvarligDto();
+    private CaseWorker getSaksansvarlig(SakResource sakResource) {
+        CaseWorker caseWorker = new CaseWorker();
         try {
 
             String saksansvarligHref = this.getSaksansvarligHref(sakResource);
@@ -59,10 +59,10 @@ public class SakMapper {
 
             Optional.ofNullable(arkivressursResource.getKildesystemId())
                     .map(Identifikator::getIdentifikatorverdi)
-                    .ifPresent(saksansvarligDto::setKildesystemId);
+                    .ifPresent(caseWorker::setKildesystemId);
             Optional.ofNullable(arkivressursResource.getSystemId())
                     .map(Identifikator::getIdentifikatorverdi)
-                    .ifPresent(saksansvarligDto::setSystemId);
+                    .ifPresent(caseWorker::setSystemId);
 
             String personalressursResourceHref = this.getPersonalressursResourceHref(arkivressursResource);
             PersonalressursResource personalressursResource = this.getPersonalressursResource(personalressursResourceHref);
@@ -77,12 +77,12 @@ public class SakMapper {
                                     personnavn.getEtternavn()
                             ).filter(Objects::nonNull)
                             .collect(Collectors.joining(" ")))
-                    .ifPresent(saksansvarligDto::setPersonNavn);
+                    .ifPresent(caseWorker::setPersonNavn);
 
         } catch (NoSuchLinkException | NoSuchCacheEntryException e) {
             log.warn(String.format("Could not completely map saksansvarlig for case with mappeId='%s'", sakResource.getMappeId().getIdentifikatorverdi()), e);
         }
-        return saksansvarligDto;
+        return caseWorker;
     }
 
     private String getSaksstatusResourceHref(SakResource sakResource) {
