@@ -22,10 +22,11 @@ public class CaseController {
     }
 
     @GetMapping("mappeid/{caseYear}/{caseNumber}/tittel")
-    public ResponseEntity<String> getCaseTitle(@PathVariable String caseYear, @PathVariable String caseNumber) {
+    public ResponseEntity<CaseTitle> getCaseTitle(@PathVariable String caseYear, @PathVariable String caseNumber) {
         String mappeId = caseYear + "/" + caseNumber;
-        String caseTitle = caseRequestService.getByMappeId(mappeId)
+        CaseTitle caseTitle = caseRequestService.getByMappeId(mappeId)
                 .map(MappeResource::getTittel)
+                .map(CaseTitle::new)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
                         String.format("Case with mappeId=%s not found", mappeId)
