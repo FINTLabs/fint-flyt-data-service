@@ -12,6 +12,5 @@ spring:
       group-id: fint-skjema-data-service
 server:
   port: 8080
-logging:
-  level:
-    no.fintlabs.cache: INFO
+  max-http-header-size: 40KB
+
