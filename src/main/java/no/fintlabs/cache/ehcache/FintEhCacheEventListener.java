@@ -23,19 +23,12 @@ public abstract class FintEhCacheEventListener<K, V> implements FintCacheEventLi
     }
 
     private FintCacheEvent.EventType map(EventType type) {
-        switch (type) {
-            case CREATED:
-                return FintCacheEvent.EventType.CREATED;
-            case UPDATED:
-                return FintCacheEvent.EventType.UPDATED;
-            case REMOVED:
-                return FintCacheEvent.EventType.REMOVED;
-            case EXPIRED:
-                return FintCacheEvent.EventType.EXPIRED;
-            case EVICTED:
-                return FintCacheEvent.EventType.EVICTED;
-            default:
-                throw new IllegalArgumentException();
-        }
+        return switch (type) {
+            case CREATED -> FintCacheEvent.EventType.CREATED;
+            case UPDATED -> FintCacheEvent.EventType.UPDATED;
+            case REMOVED -> FintCacheEvent.EventType.REMOVED;
+            case EXPIRED -> FintCacheEvent.EventType.EXPIRED;
+            case EVICTED -> FintCacheEvent.EventType.EVICTED;
+        };
     }
 }
