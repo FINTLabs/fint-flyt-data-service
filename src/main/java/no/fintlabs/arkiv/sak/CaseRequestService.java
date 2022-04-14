@@ -2,8 +2,13 @@ package no.fintlabs.arkiv.sak;
 
 import lombok.extern.slf4j.Slf4j;
 import no.fint.model.resource.arkiv.noark.SakResource;
-import no.fintlabs.kafka.TopicCleanupPolicyParameters;
-import no.fintlabs.kafka.requestreply.*;
+import no.fintlabs.kafka.common.topic.TopicCleanupPolicyParameters;
+import no.fintlabs.kafka.requestreply.RequestProducer;
+import no.fintlabs.kafka.requestreply.RequestProducerFactory;
+import no.fintlabs.kafka.requestreply.RequestProducerRecord;
+import no.fintlabs.kafka.requestreply.topic.ReplyTopicNameParameters;
+import no.fintlabs.kafka.requestreply.topic.ReplyTopicService;
+import no.fintlabs.kafka.requestreply.topic.RequestTopicNameParameters;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -18,29 +23,24 @@ public class CaseRequestService {
     private final RequestTopicNameParameters requestTopicNameParameters;
 
     public CaseRequestService(
-            @Value("${fint.org-id}") String orgId,
             @Value("${fint.kafka.application-id}") String applicationId,
             ReplyTopicService replyTopicService,
-            FintKafkaRequestProducerFactory fintKafkaRequestProducerFactory
+            RequestProducerFactory requestProducerFactory
     ) {
         ReplyTopicNameParameters replyTopicNameParameters = ReplyTopicNameParameters.builder()
-                .orgId(orgId)
-                .domainContext("skjema")
                 .applicationId(applicationId)
                 .resource("arkiv.noark.sak")
                 .build();
 
         replyTopicService.ensureTopic(replyTopicNameParameters, 0, TopicCleanupPolicyParameters.builder().build());
 
-        this.requestProducer = fintKafkaRequestProducerFactory.createProducer(
+        this.requestProducer = requestProducerFactory.createProducer(
                 replyTopicNameParameters,
                 String.class,
                 SakResource.class
         );
 
         requestTopicNameParameters = RequestTopicNameParameters.builder()
-                .orgId(orgId)
-                .domainContext("skjema")
                 .resource("arkiv.noark.sak")
                 .parameterName("mappeid")
                 .build();
