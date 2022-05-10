@@ -11,7 +11,7 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 @EnableWebFluxSecurity
 public class SecurityConfiguration {
 
-    @Value("${fint.integration.service.authorized-org-id:vigo.no}")
+    @Value("${fint.integration.service.authorized-org-id:viken.no}")
     private String authorizedOrgId;
 
     @Bean
@@ -19,7 +19,7 @@ public class SecurityConfiguration {
         http
                 .authorizeExchange((authorize) -> authorize
                         .pathMatchers("/**")
-                        .hasAnyAuthority("ORGID_" + authorizedOrgId)
+                        .hasAnyAuthority("ORGID_" + authorizedOrgId, "ORGID_vigo.no")
                         .anyExchange()
                         .authenticated())
                 .addFilterBefore(new AuthorizationLogFilter(), SecurityWebFiltersOrder.AUTHENTICATION)
