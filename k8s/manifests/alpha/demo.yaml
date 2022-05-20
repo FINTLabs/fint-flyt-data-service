@@ -1,7 +1,7 @@
 apiVersion: onepassword.com/v1
 kind: OnePasswordItem
 metadata:
-  name: viken-no-fint-skjema-data-service
+  name: demo-fint-skjema-data-service
 spec:
   itemPath: "vaults/aks-alpha-vault/items/aiven-kafka"
 ---
@@ -40,7 +40,7 @@ metadata:
       proxy_pass_header Authorization;
 spec:
   rules:
-    - host: "viken-no-skjema.vigoiks.no"
+    - host: "flyt-demo.vigoiks.no"
       http:
         paths:
           - path: /api/kodeverk
@@ -104,3 +104,4 @@ spec:
             - {name: TZ, value: Europe/Oslo}
             - {name: JAVA_TOOL_OPTIONS, value: '-XX:+ExitOnOutOfMemoryError -Xmx1840M'}
             - {name: logging.level.no.fintlabs.arkiv, value: info}
+            - {name: fint.kafka.topic.org-id, value: 'pwf.no'}
