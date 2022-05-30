@@ -40,7 +40,7 @@ metadata:
       proxy_pass_header Authorization;
 spec:
   rules:
-    - host: "flyt-demo.vigoiks.no"
+    - host: "fint-flyt-demo.vigoiks.no"
       http:
         paths:
           - path: /api/kodeverk
