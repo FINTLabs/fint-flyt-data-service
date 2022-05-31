@@ -32,12 +32,6 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
-    nginx.ingress.kubernetes.io/auth-signin: https://$host/oauth2/start?rd=$escaped_request_uri
-    nginx.ingress.kubernetes.io/auth-url: https://$host/oauth2/auth
-    nginx.ingress.kubernetes.io/configuration-snippet: |
-      auth_request_set $token $upstream_http_authorization;
-      proxy_set_header Authorization $token;
-      proxy_pass_header Authorization;
 spec:
   rules:
     - host: "fint-flyt-demo.vigoiks.no"
@@ -98,10 +92,11 @@ spec:
           ports:
             - containerPort: 8080
           envFrom:
-          - secretRef:
-              name: "aiven-kafka"
+            - secretRef:
+                name: "aiven-kafka"
           env:
-            - {name: TZ, value: Europe/Oslo}
-            - {name: JAVA_TOOL_OPTIONS, value: '-XX:+ExitOnOutOfMemoryError -Xmx1840M'}
-            - {name: logging.level.no.fintlabs.arkiv, value: info}
-            - {name: fint.kafka.topic.org-id, value: 'pwf.no'}
+            - { name: TZ, value: Europe/Oslo }
+            - { name: JAVA_TOOL_OPTIONS, value: '-XX:+ExitOnOutOfMemoryError -Xmx1840M' }
+            - { name: logging.level.no.fintlabs.arkiv, value: info }
+            - { name: fint.kafka.topic.org-id, value: 'pwf.no' }
+            - { name: fint.security.resourceserver.enabled, value: 'false' }

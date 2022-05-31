@@ -11,12 +11,21 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 @EnableWebFluxSecurity
 public class SecurityConfiguration {
 
-    @Value("${fint.integration.service.authorized-org-id:viken.no}")
+    @Value("${fint.integration.service.authorized-org-id}")
     private String authorizedOrgId;
 
     @Bean
-    SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
-        http
+    SecurityWebFilterChain springSecurityFilterChain(
+            ServerHttpSecurity http,
+            @Value("${fint.security.resourceserver.enabled:true}") boolean enabled
+    ) {
+        return enabled
+                ? createOauth2FilterChain(http)
+                : createPermitAllFilterChain(http);
+    }
+
+    private SecurityWebFilterChain createOauth2FilterChain(ServerHttpSecurity http) {
+        return http
                 .authorizeExchange((authorize) -> authorize
                         .pathMatchers("/**")
                         .hasAnyAuthority("ORGID_" + authorizedOrgId, "ORGID_vigo.no")
@@ -25,7 +34,17 @@ public class SecurityConfiguration {
                 .addFilterBefore(new AuthorizationLogFilter(), SecurityWebFiltersOrder.AUTHENTICATION)
                 .oauth2ResourceServer((resourceServer) -> resourceServer
                         .jwt()
-                        .jwtAuthenticationConverter(new FintJwtUserConverter()));
-        return http.build();
+                        .jwtAuthenticationConverter(new FintJwtUserConverter())
+                ).build();
     }
+
+    private SecurityWebFilterChain createPermitAllFilterChain(ServerHttpSecurity http) {
+        return http
+                .authorizeExchange()
+                .anyExchange()
+                .permitAll()
+                .and()
+                .build();
+    }
+
 }
