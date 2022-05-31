@@ -11,7 +11,7 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 @EnableWebFluxSecurity
 public class SecurityConfiguration {
 
-    @Value("${fint.integration.service.authorized-org-id}")
+    @Value("${fint.integration.service.authorized-org-id:viken.no}")
     private String authorizedOrgId;
 
     @Bean
