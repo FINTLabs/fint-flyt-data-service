@@ -46,8 +46,7 @@ public class CaseController {
     @GetMapping("kildesystem-instans-id/{sourceApplicationInstanceId}/info")
     public ResponseEntity<CaseInfo> getCaseInfo(@PathVariable String sourceApplicationInstanceId) {
         String sourceApplication = "TODO"; // TODO: 16/06/2022 Get from authorisation props? Necessary?
-        return
-                caseIdRequestService.getCaseId(sourceApplicationInstanceId)
+        return caseIdRequestService.getCaseId(sourceApplicationInstanceId)
                         .flatMap(caseRequestService::getByMappeId)
                         .map(caseResource -> caseInfoMappingService.toCaseInfo(sourceApplicationInstanceId, caseResource))
                         .map(ResponseEntity::ok)
