@@ -85,7 +85,7 @@ public class CaseInfoMappingService {
                     .phone(personResource.getKontaktinformasjon().getMobiltelefonnummer())
                     .build();
         } catch (NoSuchLinkException | NoSuchCacheEntryException e) {
-            log.warn("No case manager for case" + caseResource.getMappeId().getIdentifikatorverdi(), e);
+            log.warn("No case manager for case with mappeId='" + caseResource.getMappeId().getIdentifikatorverdi() + "'", e);
             return null;
         }
     }
@@ -104,7 +104,7 @@ public class CaseInfoMappingService {
                     .name(administrativeUnitResource.getNavn())
                     .build();
         } catch (NoSuchLinkException | NoSuchCacheEntryException e) {
-            log.warn("No administrative unit for case" + caseResource.getMappeId().getIdentifikatorverdi(), e);
+            log.warn("No administrative unit for case with mappeId='" + caseResource.getMappeId().getIdentifikatorverdi() + "'", e);
             return null;
         }
     }
@@ -124,7 +124,7 @@ public class CaseInfoMappingService {
                     .code(caseStatusResource.getKode())
                     .build();
         } catch (NoSuchLinkException | NoSuchCacheEntryException e) {
-            log.warn("No status for case" + caseResource.getMappeId().getIdentifikatorverdi(), e);
+            log.warn("No status for case with mappeId='" + caseResource.getMappeId().getIdentifikatorverdi() + "'", e);
             return null;
         }
     }
