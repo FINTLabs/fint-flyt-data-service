@@ -5,10 +5,7 @@ import no.fint.model.resource.arkiv.noark.SakResource;
 import no.fintlabs.arkiv.sak.model.CaseInfo;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 @Slf4j
@@ -43,8 +40,8 @@ public class CaseController {
                 ));
     }
 
-    @GetMapping("kildesystem-instans-id/{sourceApplicationInstanceId}/info")
-    public ResponseEntity<CaseInfo> getCaseInfo(@PathVariable String sourceApplicationInstanceId) {
+    @GetMapping("info")
+    public ResponseEntity<CaseInfo> getCaseInfo(@RequestParam String sourceApplicationInstanceId) {
         String sourceApplication = "TODO"; // TODO: 16/06/2022 Get from authorisation props? Necessary?
         return caseIdRequestService.getCaseId(sourceApplicationInstanceId)
                         .flatMap(caseRequestService::getByMappeId)
