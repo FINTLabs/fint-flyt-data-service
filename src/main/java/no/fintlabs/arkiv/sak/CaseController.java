@@ -13,16 +13,16 @@ import org.springframework.web.server.ResponseStatusException;
 @RequestMapping("/api/sak")
 public class CaseController {
 
-    private final CaseIdRequestService caseIdRequestService;
+    private final ArchiveCaseFolderIdRequestService archiveCaseFolderIdRequestService;
     private final CaseRequestService caseRequestService;
     private final CaseInfoMappingService caseInfoMappingService;
 
     public CaseController(
-            CaseIdRequestService caseIdRequestService,
+            ArchiveCaseFolderIdRequestService archiveCaseFolderIdRequestService,
             CaseRequestService caseRequestService,
             CaseInfoMappingService caseInfoMappingService
     ) {
-        this.caseIdRequestService = caseIdRequestService;
+        this.archiveCaseFolderIdRequestService = archiveCaseFolderIdRequestService;
         this.caseRequestService = caseRequestService;
         this.caseInfoMappingService = caseInfoMappingService;
     }
@@ -43,7 +43,7 @@ public class CaseController {
     @GetMapping("info")
     public ResponseEntity<CaseInfo> getCaseInfo(@RequestParam String sourceApplicationInstanceId) {
         String sourceApplication = "TODO"; // TODO: 16/06/2022 Get from authorisation props? Necessary?
-        return caseIdRequestService.getCaseId(sourceApplicationInstanceId)
+        return archiveCaseFolderIdRequestService.getArchiveCaseFolderId(sourceApplicationInstanceId)
                         .flatMap(caseRequestService::getByMappeId)
                         .map(caseResource -> caseInfoMappingService.toCaseInfo(sourceApplicationInstanceId, caseResource))
                         .map(ResponseEntity::ok)
