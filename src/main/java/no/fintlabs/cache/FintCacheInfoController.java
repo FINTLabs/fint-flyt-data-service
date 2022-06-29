@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/data-service")
+@RequestMapping("/api/admin/data-service/cache") // TODO: 29/06/2022 Burde være dynamisk applikasjonsid i url-en
 public class FintCacheInfoController {
 
     private final FintCacheManager fintCacheManager;
@@ -25,7 +25,7 @@ public class FintCacheInfoController {
         this.objectMapper = objectMapper;
     }
 
-    @GetMapping("cache/info")
+    @GetMapping("info")
     public ResponseEntity<FintCacheInfo> getCacheInfo(
             @RequestParam() String alias,
             @RequestParam() String keyType,
@@ -50,7 +50,7 @@ public class FintCacheInfoController {
         }
     }
 
-    @GetMapping("cache/value")
+    @GetMapping("value")
     public ResponseEntity<?> getCacheValue(
             @RequestParam() String alias,
             @RequestParam() String keyType,
@@ -76,7 +76,7 @@ public class FintCacheInfoController {
         }
     }
 
-    @GetMapping("cache/values")
+    @GetMapping("values")
     public ResponseEntity<List<?>> getCacheValues(
             @RequestParam() String alias,
             @RequestParam() String keyType,

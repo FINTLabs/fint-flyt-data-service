@@ -19,7 +19,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/kodeverk")
+@RequestMapping("/api/intern/kodeverk")
 public class CodelistController {
 
     private final FintCache<String, AdministrativEnhetResource> administrativEnhetResourceCache;

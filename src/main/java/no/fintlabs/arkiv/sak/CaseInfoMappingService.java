@@ -45,8 +45,8 @@ public class CaseInfoMappingService {
     public CaseInfo toCaseInfo(String sourceApplicationInstanceId, SakResource caseResource) {
         return CaseInfo
                 .builder()
-                .caseId(caseResource.getMappeId().getIdentifikatorverdi())
                 .sourceApplicationInstanceId(sourceApplicationInstanceId)
+                .archiveCaseId(caseResource.getMappeId().getIdentifikatorverdi())
                 .caseManager(getCaseManager(caseResource))
                 .administrativeUnit(getAdministrativeUnit(caseResource))
                 .status(getCaseStatus(caseResource))
