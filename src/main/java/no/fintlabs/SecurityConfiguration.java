@@ -63,7 +63,7 @@ public class SecurityConfiguration {
 
     private Mono<AuthorizationDecision> manageExternalAccess(Mono<Authentication> mono, Object context) {
         // TODO: 27/06/2022 Implement
-        return mono.map((authentication) -> new AuthorizationDecision(true));
+        return mono.map((authentication) -> new AuthorizationDecision(false));
     }
 
     private SecurityWebFilterChain createPermitAllFilterChain(ServerHttpSecurity http) {
