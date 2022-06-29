@@ -9,6 +9,7 @@ import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import reactor.core.publisher.Mono;
 
@@ -36,16 +37,20 @@ public class SecurityConfiguration {
         return http
                 .authorizeExchange((authorize) -> authorize
                         .pathMatchers("/api/admin/**").access(this::manageAdminAccess)
-                        .pathMatchers("api/intern/**").hasAnyAuthority("ORGID_" + authorizedOrgId, "ORGID_vigo.no")
+                        .pathMatchers("/api/intern/**").hasAnyAuthority("ORGID_" + authorizedOrgId, "ORGID_vigo.no")
                         .pathMatchers("/api/**").access(this::manageExternalAccess)
                         .pathMatchers("/**").denyAll()
                         .anyExchange()
                         .authenticated())
                 .addFilterBefore(new AuthorizationLogFilter(), SecurityWebFiltersOrder.AUTHENTICATION)
                 .oauth2ResourceServer((resourceServer) -> resourceServer
-                        .jwt()
-                        .jwtAuthenticationConverter(new FintJwtUserConverter())
-                ).build();
+                                .jwt()
+                                .jwtAuthenticationConverter(new FintJwtUserConverter())
+                        // TODO: 29/06/2022 Kunne vi hatt en FintJwtClientConverter som sjekker sub-claimen mot
+                        //  klient-autentiseringstjenesten og legger til resultatet i authorities -- feks "CLIENT_ACOS"?
+                        //  Vi kan vel skille mellom person og maskin på scope, og kan velge converter avhengig av det?
+                )
+                .build();
     }
 
     private Mono<AuthorizationDecision> manageAdminAccess(Mono<Authentication> mono, Object context) {
@@ -62,8 +67,14 @@ public class SecurityConfiguration {
     }
 
     private Mono<AuthorizationDecision> manageExternalAccess(Mono<Authentication> mono, Object context) {
-        // TODO: 27/06/2022 Implement
-        return mono.map((authentication) -> new AuthorizationDecision(false));
+        return mono
+                .map((auth) -> auth instanceof JwtAuthenticationToken
+                        && ((JwtAuthenticationToken) auth)
+                        .getTokenAttributes()
+                        .get("sub")
+                        .equals("5679f546-b72e-41d4-bbfe-68b029a8c158")
+                )
+                .map(AuthorizationDecision::new);
     }
 
     private SecurityWebFilterChain createPermitAllFilterChain(ServerHttpSecurity http) {

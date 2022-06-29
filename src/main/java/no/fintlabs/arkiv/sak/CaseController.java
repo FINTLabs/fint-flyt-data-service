@@ -32,7 +32,7 @@ public class CaseController {
         this.caseInfoMappingService = caseInfoMappingService;
     }
 
-    @GetMapping("intern/sak/mappeid/{caseYear}/{caseNumber}/tittel")
+    @GetMapping("intern/sakstittel/mappeid/{caseYear}/{caseNumber}")
     public ResponseEntity<CaseTitle> getCaseTitle(@PathVariable String caseYear, @PathVariable String caseNumber) {
         String mappeId = caseYear + "/" + caseNumber;
         return caseRequestService.getByMappeId(mappeId)
@@ -45,9 +45,9 @@ public class CaseController {
                 ));
     }
 
-    @GetMapping("sak/info")
+    @GetMapping("sak/instansid/{sourceApplicationInstanceId}")
     public ResponseEntity<CaseInfo> getCaseInfo(
-            @RequestParam(name = "instanceId") String sourceApplicationInstanceId,
+            @PathVariable String sourceApplicationInstanceId,
             @RequestParam Optional<Boolean> returnMockData
     ) {
         if (returnMockData.orElse(false)) {
