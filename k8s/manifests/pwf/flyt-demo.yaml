@@ -30,14 +30,14 @@ spec:
     - host: "fint-flyt-demo.vigoiks.no"
       http:
         paths:
-          - path: /api/kodeverk
+          - path: /api/intern/kodeverk
             pathType: Prefix
             backend:
               service:
                 name: fint-flyt-data-service
                 port:
                   number: 8080
-          - path: /api/sak
+          - path: /api/sakstittel
             pathType: Prefix
             backend:
               service:
