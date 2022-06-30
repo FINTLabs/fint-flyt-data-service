@@ -43,7 +43,7 @@ spec:
                 name: fint-flyt-data-service
                 port:
                   number: 8080
-          - path: /api/sakstittel
+          - path: /api/intern/sakstittel
             pathType: Prefix
             backend:
               service:
