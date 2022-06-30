@@ -1,37 +1,98 @@
 package no.fintlabs.arkiv.sak;
 
 import lombok.extern.slf4j.Slf4j;
-import no.fint.model.resource.arkiv.noark.MappeResource;
+import no.fint.model.resource.arkiv.noark.SakResource;
+import no.fintlabs.arkiv.sak.model.AdministrativeUnit;
+import no.fintlabs.arkiv.sak.model.CaseInfo;
+import no.fintlabs.arkiv.sak.model.CaseManager;
+import no.fintlabs.arkiv.sak.model.CaseStatus;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.Optional;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/sak")
+@RequestMapping("/api")
 public class CaseController {
 
+    private final ArchiveCaseFolderIdRequestService archiveCaseFolderIdRequestService;
     private final CaseRequestService caseRequestService;
+    private final CaseInfoMappingService caseInfoMappingService;
 
-    public CaseController(CaseRequestService caseRequestService) {
+    public CaseController(
+            ArchiveCaseFolderIdRequestService archiveCaseFolderIdRequestService,
+            CaseRequestService caseRequestService,
+            CaseInfoMappingService caseInfoMappingService
+    ) {
+        this.archiveCaseFolderIdRequestService = archiveCaseFolderIdRequestService;
         this.caseRequestService = caseRequestService;
+        this.caseInfoMappingService = caseInfoMappingService;
     }
 
-    @GetMapping("mappeid/{caseYear}/{caseNumber}/tittel")
+    @GetMapping("intern/sakstittel/mappeid/{caseYear}/{caseNumber}")
     public ResponseEntity<CaseTitle> getCaseTitle(@PathVariable String caseYear, @PathVariable String caseNumber) {
         String mappeId = caseYear + "/" + caseNumber;
-        CaseTitle caseTitle = caseRequestService.getByMappeId(mappeId)
-                .map(MappeResource::getTittel)
+        return caseRequestService.getByMappeId(mappeId)
+                .map(SakResource::getTittel)
                 .map(CaseTitle::new)
+                .map(ResponseEntity::ok)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
-                        String.format("Case with mappeId=%s not found", mappeId)
+                        String.format("Case with mappeId=%s could not be found", mappeId)
                 ));
-        return ResponseEntity.ok(caseTitle);
+    }
+
+    @GetMapping("sak/instansid/{sourceApplicationInstanceId}")
+    public ResponseEntity<CaseInfo> getCaseInfo(
+            @PathVariable String sourceApplicationInstanceId,
+            @RequestParam Optional<Boolean> returnMockData
+    ) {
+        if (returnMockData.orElse(false)) {
+            return ResponseEntity.ok(createMockCaseInfo(sourceApplicationInstanceId));
+        }
+        String sourceApplication = "TODO"; // TODO: 16/06/2022 Get from authorisation props? Necessary?
+        return archiveCaseFolderIdRequestService.getArchiveCaseFolderId(sourceApplicationInstanceId)
+                .flatMap(caseRequestService::getByMappeId)
+                .map(caseResource -> caseInfoMappingService.toCaseInfo(sourceApplicationInstanceId, caseResource))
+                .map(ResponseEntity::ok)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        String.format("Case with sourceApplicationInstanceId=%s could not be found", sourceApplicationInstanceId)
+                ));
+    }
+
+    private CaseInfo createMockCaseInfo(String sourceApplicationInstanceId) {
+        return CaseInfo
+                .builder()
+                .sourceApplicationInstanceId(sourceApplicationInstanceId)
+                .archiveCaseId("2021/02")
+                .caseManager(
+                        CaseManager
+                                .builder()
+                                .firstName("Ola")
+                                .middleName(null)
+                                .lastName("Nordmann")
+                                .email("ola.normann@domain.com")
+                                .phone("12345678")
+                                .build()
+                )
+                .administrativeUnit(
+                        AdministrativeUnit
+                                .builder()
+                                .name("VGGLEM Skolemiljø og Kommunikasjon")
+                                .build()
+                )
+                .status(
+                        CaseStatus
+                                .builder()
+                                .name("Under behandling")
+                                .code("B")
+                                .build()
+                )
+                .build();
     }
 
 }
