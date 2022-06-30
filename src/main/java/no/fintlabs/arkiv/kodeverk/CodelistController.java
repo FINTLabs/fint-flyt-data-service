@@ -9,10 +9,7 @@ import no.fint.model.resource.arkiv.noark.KlassifikasjonssystemResource;
 import no.fintlabs.cache.FintCache;
 import no.fintlabs.links.ResourceLinkUtil;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -84,8 +81,8 @@ public class CodelistController {
         );
     }
 
-    @GetMapping("klasse/{klassifikasjonssystemLink}")
-    public ResponseEntity<Collection<ResourceReference>> getKlasse(@PathVariable String klassifikasjonssystemLink) {
+    @GetMapping("klasse")
+    public ResponseEntity<Collection<ResourceReference>> getKlasse(@RequestParam String klassifikasjonssystemLink) {
         return ResponseEntity.ok(
                 klassifikasjonssystemResourceCache
                         .get(klassifikasjonssystemLink)

@@ -5,7 +5,7 @@ import no.fint.model.felles.kompleksedatatyper.Personnavn;
 import no.fint.model.resource.administrasjon.personal.PersonalressursResource;
 import no.fint.model.resource.arkiv.noark.ArkivressursResource;
 import no.fint.model.resource.felles.PersonResource;
-import no.fintlabs.cache.FintCacheManager;
+import no.fintlabs.cache.FintCache;
 import no.fintlabs.cache.exceptions.NoSuchCacheEntryException;
 import no.fintlabs.cache.exceptions.NoSuchCacheException;
 import no.fintlabs.links.NoSuchLinkException;
@@ -22,10 +22,15 @@ import java.util.stream.Stream;
 @Service
 public class ArkivressursReferenceMapper {
 
-    private final FintCacheManager fintCacheManager;
+    private final FintCache<String, PersonalressursResource> personalressursResourceCache;
+    private final FintCache<String, PersonResource> personResourceCache;
 
-    public ArkivressursReferenceMapper(FintCacheManager fintCacheManager) {
-        this.fintCacheManager = fintCacheManager;
+    public ArkivressursReferenceMapper(
+            FintCache<String, PersonalressursResource> personalressursResourceCache,
+            FintCache<String, PersonResource> personResourceCache
+    ) {
+        this.personalressursResourceCache = personalressursResourceCache;
+        this.personResourceCache = personResourceCache;
     }
 
     public Optional<ResourceReference> map(ArkivressursResource arkivressursResource) {
@@ -41,10 +46,10 @@ public class ArkivressursReferenceMapper {
 
     private String getDisplayText(ArkivressursResource arkivressursResource) {
         String personalressursResourceHref = this.getPersonalressursResourceHref(arkivressursResource);
-        PersonalressursResource personalressursResource = this.getPersonalressursResource(personalressursResourceHref);
+        PersonalressursResource personalressursResource = personalressursResourceCache.get(personalressursResourceHref);
 
         String personResourceHref = this.getPersonResourceHref(personalressursResource);
-        PersonResource personResource = this.getPersonResource(personResourceHref);
+        PersonResource personResource = personResourceCache.get(personResourceHref);
 
         Personnavn personnavn = personResource.getNavn();
         if (personnavn == null) {
@@ -68,18 +73,6 @@ public class ArkivressursReferenceMapper {
 
     private String getPersonResourceHref(PersonalressursResource personalressursResource) {
         return ResourceLinkUtil.getFirstLink(personalressursResource::getPerson, personalressursResource, "Person");
-    }
-
-    private PersonalressursResource getPersonalressursResource(String personalressursResourceHref) {
-        return this.fintCacheManager
-                .getCache("administrasjon.personal.personalressurs", String.class, PersonalressursResource.class)
-                .get(personalressursResourceHref);
-    }
-
-    private PersonResource getPersonResource(String personResourceHref) {
-        return this.fintCacheManager
-                .getCache("administrasjon.personal.person", String.class, PersonResource.class)
-                .get(personResourceHref);
     }
 
 }
