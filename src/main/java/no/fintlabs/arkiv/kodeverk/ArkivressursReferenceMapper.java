@@ -62,9 +62,9 @@ public class ArkivressursReferenceMapper {
                 ).filter(Objects::nonNull)
                 .collect(Collectors.joining(" "));
 
-        String ansattnummerString = personalressursResource.getAnsattnummer().getIdentifikatorverdi();
+        String brukernavnString = personalressursResource.getBrukernavn().getIdentifikatorverdi();
 
-        return String.format("%s (%s)", personnavnString, ansattnummerString);
+        return String.format("%s (%s)", personnavnString, brukernavnString);
     }
 
     private String getPersonalressursResourceHref(ArkivressursResource arkivressursResource) {
