@@ -79,6 +79,11 @@ public class ResourceEntityCacheConfiguration {
     }
 
     @Bean
+    FintCache<String, JournalpostTypeResource> journalpostTypeResourceCache() {
+        return createCache(JournalpostTypeResource.class);
+    }
+
+    @Bean
     FintCache<String, VariantformatResource> variantformatResourceCache() {
         return createCache(VariantformatResource.class);
     }

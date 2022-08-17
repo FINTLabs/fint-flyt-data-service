@@ -29,6 +29,7 @@ public class CodelistController {
     private final FintCache<String, SkjermingshjemmelResource> skjermingshjemmelResourceCache;
     private final FintCache<String, TilgangsrestriksjonResource> tilgangsrestriksjonResourceCache;
     private final FintCache<String, JournalStatusResource> journalStatusResourceCache;
+    private final FintCache<String, JournalpostTypeResource> journalpostTypeResourceCache;
     private final FintCache<String, VariantformatResource> variantformatResourceCache;
 
     private final ArkivressursReferenceMapper arkivressursReferenceMapper;
@@ -44,6 +45,7 @@ public class CodelistController {
             FintCache<String, SkjermingshjemmelResource> skjermingshjemmelResourceCache,
             FintCache<String, TilgangsrestriksjonResource> tilgangsrestriksjonResourceCache,
             FintCache<String, JournalStatusResource> journalStatusResourceCache,
+            FintCache<String, JournalpostTypeResource> journalpostTypeResourceCache,
             FintCache<String, VariantformatResource> variantformatResourceCache, ArkivressursReferenceMapper arkivressursReferenceMapper) {
         this.administrativEnhetResourceCache = administrativEnhetResourceCache;
         this.arkivdelResourceCache = arkivdelResourceCache;
@@ -55,6 +57,7 @@ public class CodelistController {
         this.skjermingshjemmelResourceCache = skjermingshjemmelResourceCache;
         this.tilgangsrestriksjonResourceCache = tilgangsrestriksjonResourceCache;
         this.journalStatusResourceCache = journalStatusResourceCache;
+        this.journalpostTypeResourceCache = journalpostTypeResourceCache;
         this.variantformatResourceCache = variantformatResourceCache;
         this.arkivressursReferenceMapper = arkivressursReferenceMapper;
     }
@@ -169,6 +172,17 @@ public class CodelistController {
                         .getAllDistinct()
                         .stream()
                         .map(journalStatusResource -> this.mapToResourceReference(journalStatusResource, journalStatusResource.getNavn()))
+                        .collect(Collectors.toList())
+        );
+    }
+
+    @GetMapping("journalposttype")
+    public ResponseEntity<Collection<ResourceReference>> getJournalpostType() {
+        return ResponseEntity.ok(
+                journalpostTypeResourceCache
+                        .getAllDistinct()
+                        .stream()
+                        .map(journalpostTypeResource -> this.mapToResourceReference(journalpostTypeResource, journalpostTypeResource.getNavn()))
                         .collect(Collectors.toList())
         );
     }

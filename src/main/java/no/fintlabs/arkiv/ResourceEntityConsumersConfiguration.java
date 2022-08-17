@@ -164,6 +164,17 @@ public class ResourceEntityConsumersConfiguration {
     }
 
     @Bean
+    ConcurrentMessageListenerContainer<String, JournalpostTypeResource> journalpostTypeEntityConsumer(
+            FintCache<String, JournalpostTypeResource> journalpostTypeResourceCache
+    ) {
+        return createCacheConsumer(
+                "arkiv.kodeverk.journalposttype",
+                JournalpostTypeResource.class,
+                journalpostTypeResourceCache
+        );
+    }
+
+    @Bean
     ConcurrentMessageListenerContainer<String, VariantformatResource> variantformatResourceEntityConsumer(
             FintCache<String, VariantformatResource> variantformatResourceCache
     ) {
