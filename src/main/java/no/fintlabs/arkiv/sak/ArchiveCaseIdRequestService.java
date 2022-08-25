@@ -14,26 +14,26 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
-public class ArchiveCaseFolderIdRequestService {
+public class ArchiveCaseIdRequestService {
 
     private final RequestProducer<String, String> caseIdRequestProducer;
     private final RequestTopicNameParameters requestTopicNameParameters;
 
-    public ArchiveCaseFolderIdRequestService(
+    public ArchiveCaseIdRequestService(
             @Value("${fint.kafka.application-id}") String applicationId,
             ReplyTopicService replyTopicService,
             RequestProducerFactory requestProducerFactory
     ) {
         requestTopicNameParameters = RequestTopicNameParameters
                 .builder()
-                .resource("archive.case.folder.id")
+                .resource("archive.case.id")
                 .parameterName("source-application-instance-id")
                 .build();
 
         ReplyTopicNameParameters replyTopicNameParameters = ReplyTopicNameParameters
                 .builder()
                 .applicationId(applicationId)
-                .resource("archive.case.folder.id")
+                .resource("archive.case.id")
                 .build();
         replyTopicService.ensureTopic(replyTopicNameParameters, 0, TopicCleanupPolicyParameters.builder().build());
         caseIdRequestProducer = requestProducerFactory.createProducer(
@@ -43,7 +43,7 @@ public class ArchiveCaseFolderIdRequestService {
         );
     }
 
-    public Optional<String> getArchiveCaseFolderId(String sourceApplicationInstanceId) {
+    public Optional<String> getArchiveCaseId(String sourceApplicationInstanceId) {
         return caseIdRequestProducer.requestAndReceive(
                 RequestProducerRecord
                         .<String>builder()

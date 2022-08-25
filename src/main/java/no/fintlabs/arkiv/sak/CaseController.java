@@ -18,16 +18,16 @@ import java.util.Optional;
 @RequestMapping("/api")
 public class CaseController {
 
-    private final ArchiveCaseFolderIdRequestService archiveCaseFolderIdRequestService;
+    private final ArchiveCaseIdRequestService archiveCaseIdRequestService;
     private final CaseRequestService caseRequestService;
     private final CaseInfoMappingService caseInfoMappingService;
 
     public CaseController(
-            ArchiveCaseFolderIdRequestService archiveCaseFolderIdRequestService,
+            ArchiveCaseIdRequestService archiveCaseIdRequestService,
             CaseRequestService caseRequestService,
             CaseInfoMappingService caseInfoMappingService
     ) {
-        this.archiveCaseFolderIdRequestService = archiveCaseFolderIdRequestService;
+        this.archiveCaseIdRequestService = archiveCaseIdRequestService;
         this.caseRequestService = caseRequestService;
         this.caseInfoMappingService = caseInfoMappingService;
     }
@@ -54,7 +54,7 @@ public class CaseController {
             return ResponseEntity.ok(createMockCaseInfo(sourceApplicationInstanceId));
         }
         String sourceApplication = "TODO"; // TODO: 16/06/2022 Get from authorisation props? Necessary?
-        return archiveCaseFolderIdRequestService.getArchiveCaseFolderId(sourceApplicationInstanceId)
+        return archiveCaseIdRequestService.getArchiveCaseId(sourceApplicationInstanceId)
                 .flatMap(caseRequestService::getByMappeId)
                 .map(caseResource -> caseInfoMappingService.toCaseInfo(sourceApplicationInstanceId, caseResource))
                 .map(ResponseEntity::ok)
