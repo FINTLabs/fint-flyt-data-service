@@ -13,9 +13,11 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
 
+import static no.fintlabs.resourceserver.UrlPaths.EXTERNAL_API;
+import static no.fintlabs.resourceserver.UrlPaths.INTERNAL_API;
+
 @Slf4j
 @RestController
-@RequestMapping("/api")
 public class CaseController {
 
     private final ArchiveCaseIdRequestService archiveCaseIdRequestService;
@@ -32,7 +34,7 @@ public class CaseController {
         this.caseInfoMappingService = caseInfoMappingService;
     }
 
-    @GetMapping("intern/sakstittel/mappeid/{caseYear}/{caseNumber}")
+    @GetMapping(INTERNAL_API + "/sakstittel/mappeid/{caseYear}/{caseNumber}")
     public ResponseEntity<CaseTitle> getCaseTitle(@PathVariable String caseYear, @PathVariable String caseNumber) {
         String mappeId = caseYear + "/" + caseNumber;
         return caseRequestService.getByMappeId(mappeId)
@@ -45,7 +47,7 @@ public class CaseController {
                 ));
     }
 
-    @GetMapping("sak/instansid/{sourceApplicationInstanceId}")
+    @GetMapping(EXTERNAL_API + "/sak/instansid/{sourceApplicationInstanceId}")
     public ResponseEntity<CaseInfo> getCaseInfo(
             @PathVariable String sourceApplicationInstanceId,
             @RequestParam Optional<Boolean> returnMockData

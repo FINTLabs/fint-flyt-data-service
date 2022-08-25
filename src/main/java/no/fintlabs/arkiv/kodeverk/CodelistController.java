@@ -15,8 +15,10 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static no.fintlabs.resourceserver.UrlPaths.INTERNAL_API;
+
 @RestController
-@RequestMapping("/api/intern/kodeverk")
+@RequestMapping(INTERNAL_API + "/kodeverk")
 public class CodelistController {
 
     private final FintCache<String, AdministrativEnhetResource> administrativEnhetResourceCache;
