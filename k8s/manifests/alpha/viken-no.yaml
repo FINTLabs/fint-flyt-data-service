@@ -111,10 +111,14 @@ spec:
           ports:
             - containerPort: 8080
           envFrom:
-          - secretRef:
-              name: aiven-kafka
+            - secretRef:
+                name: aiven-kafka
           env:
-            - {name: TZ, value: Europe/Oslo}
-            - {name: JAVA_TOOL_OPTIONS, value: '-XX:+ExitOnOutOfMemoryError -Xmx1840M'}
-            - {name: logging.level.no.fintlabs.arkiv, value: info}
-            - {name: fint.org-id, value: 'viken.no'}
+            - { name: TZ, value: Europe/Oslo }
+            - { name: JAVA_TOOL_OPTIONS, value: '-XX:+ExitOnOutOfMemoryError -Xmx1840M' }
+            - { name: logging.level.no.fintlabs.arkiv, value: info }
+            - { name: fint.org-id, value: 'viken.no' }
+            - { name: fint.flyt.resource-server.security.api.external.enabled, value: 'true' }
+            - { name: fint.flyt.resource-server.security.api.external.authorized-client-ids, value: '1' }
+            - { name: fint.flyt.resource-server.security.api.internal.enabled, value: 'true' }
+            - { name: fint.flyt.resource-server.security.api.external.authorized-org-ids, value: [ 'viken.no', 'vigo.no' ] }

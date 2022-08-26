@@ -92,4 +92,7 @@ spec:
             - { name: JAVA_TOOL_OPTIONS, value: '-XX:+ExitOnOutOfMemoryError -Xmx1840M' }
             - { name: logging.level.no.fintlabs.arkiv, value: info }
             - { name: fint.org-id, value: 'pwf.no' }
-            - { name: fint.security.resourceserver.enabled, value: 'false' }
+            - { name: fint.flyt.resource-server.security.api.external.enabled, value: 'true' }
+            - { name: fint.flyt.resource-server.security.api.external.permit-all, value: 'true' }
+            - { name: fint.flyt.resource-server.security.api.internal.enabled, value: 'true' }
+            - { name: fint.flyt.resource-server.security.api.internal.permit-all, value: 'true' }
