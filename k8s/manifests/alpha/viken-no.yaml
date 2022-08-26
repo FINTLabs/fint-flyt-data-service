@@ -121,4 +121,4 @@ spec:
             - { name: fint.flyt.resource-server.security.api.external.enabled, value: 'true' }
             - { name: fint.flyt.resource-server.security.api.external.authorized-client-ids, value: '1' }
             - { name: fint.flyt.resource-server.security.api.internal.enabled, value: 'true' }
-            - { name: fint.flyt.resource-server.security.api.external.authorized-org-ids, value: [ 'viken.no', 'vigo.no' ] }
+            - { name: fint.flyt.resource-server.security.api.external.authorized-org-ids, value: 'viken.no, vigo.no' }
