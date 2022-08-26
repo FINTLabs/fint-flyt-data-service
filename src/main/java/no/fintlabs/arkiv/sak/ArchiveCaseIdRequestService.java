@@ -3,6 +3,7 @@ package no.fintlabs.arkiv.sak;
 import no.fintlabs.arkiv.sak.model.ArchiveCaseIdRequestParams;
 import no.fintlabs.kafka.common.topic.TopicCleanupPolicyParameters;
 import no.fintlabs.kafka.requestreply.RequestProducer;
+import no.fintlabs.kafka.requestreply.RequestProducerConfiguration;
 import no.fintlabs.kafka.requestreply.RequestProducerFactory;
 import no.fintlabs.kafka.requestreply.RequestProducerRecord;
 import no.fintlabs.kafka.requestreply.topic.ReplyTopicNameParameters;
@@ -12,6 +13,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.util.Optional;
 
 @Service
@@ -36,11 +38,17 @@ public class ArchiveCaseIdRequestService {
                 .applicationId(applicationId)
                 .resource("archive.case.id")
                 .build();
+
         replyTopicService.ensureTopic(replyTopicNameParameters, 0, TopicCleanupPolicyParameters.builder().build());
+
         caseIdRequestProducer = requestProducerFactory.createProducer(
                 replyTopicNameParameters,
                 ArchiveCaseIdRequestParams.class,
-                String.class
+                String.class,
+                RequestProducerConfiguration
+                        .builder()
+                        .defaultReplyTimeout(Duration.ofSeconds(10))
+                        .build()
         );
     }
 

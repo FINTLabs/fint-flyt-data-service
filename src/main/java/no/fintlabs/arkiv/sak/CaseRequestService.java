@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import no.fint.model.resource.arkiv.noark.SakResource;
 import no.fintlabs.kafka.common.topic.TopicCleanupPolicyParameters;
 import no.fintlabs.kafka.requestreply.RequestProducer;
+import no.fintlabs.kafka.requestreply.RequestProducerConfiguration;
 import no.fintlabs.kafka.requestreply.RequestProducerFactory;
 import no.fintlabs.kafka.requestreply.RequestProducerRecord;
 import no.fintlabs.kafka.requestreply.topic.ReplyTopicNameParameters;
@@ -13,6 +14,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.util.Optional;
 
 @Service
@@ -27,6 +29,11 @@ public class CaseRequestService {
             ReplyTopicService replyTopicService,
             RequestProducerFactory requestProducerFactory
     ) {
+        requestTopicNameParameters = RequestTopicNameParameters.builder()
+                .resource("arkiv.noark.sak")
+                .parameterName("mappeid")
+                .build();
+
         ReplyTopicNameParameters replyTopicNameParameters = ReplyTopicNameParameters.builder()
                 .applicationId(applicationId)
                 .resource("arkiv.noark.sak")
@@ -37,13 +44,12 @@ public class CaseRequestService {
         this.requestProducer = requestProducerFactory.createProducer(
                 replyTopicNameParameters,
                 String.class,
-                SakResource.class
+                SakResource.class,
+                RequestProducerConfiguration
+                        .builder()
+                        .defaultReplyTimeout(Duration.ofSeconds(60))
+                        .build()
         );
-
-        requestTopicNameParameters = RequestTopicNameParameters.builder()
-                .resource("arkiv.noark.sak")
-                .parameterName("mappeid")
-                .build();
     }
 
     public Optional<SakResource> getByMappeId(String mappeId) {
