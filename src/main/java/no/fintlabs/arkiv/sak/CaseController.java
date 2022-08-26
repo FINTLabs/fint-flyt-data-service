@@ -8,13 +8,20 @@ import no.fintlabs.arkiv.sak.model.CaseManager;
 import no.fintlabs.arkiv.sak.model.CaseStatus;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
+import reactor.core.publisher.Mono;
 
 import java.util.Optional;
 
 import static no.fintlabs.resourceserver.UrlPaths.EXTERNAL_API;
 import static no.fintlabs.resourceserver.UrlPaths.INTERNAL_API;
+import static no.fintlabs.resourceserver.security.client.ClientAuthorizationUtil.getSourceApplicationId;
 
 @Slf4j
 @RestController
@@ -48,15 +55,30 @@ public class CaseController {
     }
 
     @GetMapping(EXTERNAL_API + "/sak/instansid/{sourceApplicationInstanceId}")
-    public ResponseEntity<CaseInfo> getCaseInfo(
+    public Mono<ResponseEntity<?>> getCaseInfo(
+            @AuthenticationPrincipal Mono<Authentication> authenticationMono,
             @PathVariable String sourceApplicationInstanceId,
             @RequestParam Optional<Boolean> returnMockData
     ) {
-        if (returnMockData.orElse(false)) {
+        return authenticationMono.map(authentication -> getCaseInfo(
+                authentication,
+                sourceApplicationInstanceId,
+                returnMockData.orElse(false)
+        ));
+    }
+
+    public ResponseEntity<CaseInfo> getCaseInfo(
+            Authentication authentication,
+            String sourceApplicationInstanceId,
+            boolean returnMockData
+    ) {
+        if (returnMockData) {
             return ResponseEntity.ok(createMockCaseInfo(sourceApplicationInstanceId));
         }
-        String sourceApplication = "TODO"; // TODO: 16/06/2022 Get from authorisation props? Necessary?
-        return archiveCaseIdRequestService.getArchiveCaseId(sourceApplicationInstanceId)
+        return archiveCaseIdRequestService.getArchiveCaseId(
+                        getSourceApplicationId(authentication),
+                        sourceApplicationInstanceId
+                )
                 .flatMap(caseRequestService::getByMappeId)
                 .map(caseResource -> caseInfoMappingService.toCaseInfo(sourceApplicationInstanceId, caseResource))
                 .map(ResponseEntity::ok)

@@ -1,5 +1,6 @@
 package no.fintlabs.arkiv.sak;
 
+import no.fintlabs.arkiv.sak.model.ArchiveCaseIdRequestParams;
 import no.fintlabs.kafka.common.topic.TopicCleanupPolicyParameters;
 import no.fintlabs.kafka.requestreply.RequestProducer;
 import no.fintlabs.kafka.requestreply.RequestProducerFactory;
@@ -16,7 +17,7 @@ import java.util.Optional;
 @Service
 public class ArchiveCaseIdRequestService {
 
-    private final RequestProducer<String, String> caseIdRequestProducer;
+    private final RequestProducer<ArchiveCaseIdRequestParams, String> caseIdRequestProducer;
     private final RequestTopicNameParameters requestTopicNameParameters;
 
     public ArchiveCaseIdRequestService(
@@ -38,17 +39,22 @@ public class ArchiveCaseIdRequestService {
         replyTopicService.ensureTopic(replyTopicNameParameters, 0, TopicCleanupPolicyParameters.builder().build());
         caseIdRequestProducer = requestProducerFactory.createProducer(
                 replyTopicNameParameters,
-                String.class,
+                ArchiveCaseIdRequestParams.class,
                 String.class
         );
     }
 
-    public Optional<String> getArchiveCaseId(String sourceApplicationInstanceId) {
+    public Optional<String> getArchiveCaseId(String sourceApplicationId, String sourceApplicationInstanceId) {
         return caseIdRequestProducer.requestAndReceive(
                 RequestProducerRecord
-                        .<String>builder()
+                        .<ArchiveCaseIdRequestParams>builder()
                         .topicNameParameters(requestTopicNameParameters)
-                        .value(sourceApplicationInstanceId)
+                        .value(ArchiveCaseIdRequestParams
+                                .builder()
+                                .sourceApplicationId(sourceApplicationId)
+                                .sourceApplicationInstanceId(sourceApplicationInstanceId)
+                                .build()
+                        )
                         .build()
         ).map(ConsumerRecord::value);
     }
