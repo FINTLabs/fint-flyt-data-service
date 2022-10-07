@@ -21,26 +21,6 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: ingress-fint-flyt-data-service
-  annotations:
-    kubernetes.io/ingress.class: nginx
-    nginx.ingress.kubernetes.io/ssl-redirect: "false"
-spec:
-  rules:
-    - host: "viken-no-skjema.vigoiks.no"
-      http:
-        paths:
-          - path: /api/sak
-            pathType: Prefix
-            backend:
-              service:
-                name: fint-flyt-data-service
-                port:
-                  number: 8080
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
   name: ingress-fint-flyt-data-service-internal
   annotations:
     kubernetes.io/ingress.class: nginx
@@ -56,14 +36,7 @@ spec:
     - host: "viken-no-skjema.vigoiks.no"
       http:
         paths:
-          - path: /api/intern/kodeverk
-            pathType: Prefix
-            backend:
-              service:
-                name: fint-flyt-data-service
-                port:
-                  number: 8080
-          - path: /api/intern/sakstittel
+          - path: /api/intern/arkiv
             pathType: Prefix
             backend:
               service:

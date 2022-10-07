@@ -9,7 +9,10 @@ import no.fint.model.resource.arkiv.noark.KlassifikasjonssystemResource;
 import no.fintlabs.cache.FintCache;
 import no.fintlabs.links.ResourceLinkUtil;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -18,7 +21,7 @@ import java.util.stream.Collectors;
 import static no.fintlabs.resourceserver.UrlPaths.INTERNAL_API;
 
 @RestController
-@RequestMapping(INTERNAL_API + "/kodeverk")
+@RequestMapping(INTERNAL_API + "/arkiv/kodeverk")
 public class CodelistController {
 
     private final FintCache<String, AdministrativEnhetResource> administrativEnhetResourceCache;
