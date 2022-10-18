@@ -18,25 +18,21 @@ spec:
   selector:
     io.kompose.service: fint-flyt-data-service
 ---
-apiVersion: networking.k8s.io/v1
-kind: Ingress
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
 metadata:
-  name: ingress-fint-flyt-data-service
-  annotations:
-    kubernetes.io/ingress.class: nginx
-    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+  name: fint-flyt-data-service
+  labels:
+    app: fint-flyt-data-service
 spec:
-  rules:
-    - host: "fint-flyt-demo.vigoiks.no"
-      http:
-        paths:
-          - path: /api/intern/arkiv
-            pathType: Prefix
-            backend:
-              service:
-                name: fint-flyt-data-service
-                port:
-                  number: 8080
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`fint-flyt-demo.vigoiks.no`) && PathPrefix(`/api/intern/arkiv`)
+      kind: Rule
+      services:
+        - name: fint-flyt-data-service
+          port: 8080
 ---
 apiVersion: apps/v1
 kind: Deployment
