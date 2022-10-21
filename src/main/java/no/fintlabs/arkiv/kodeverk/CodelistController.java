@@ -35,6 +35,7 @@ public class CodelistController {
     private final FintCache<String, TilgangsrestriksjonResource> tilgangsrestriksjonResourceCache;
     private final FintCache<String, JournalStatusResource> journalStatusResourceCache;
     private final FintCache<String, JournalpostTypeResource> journalpostTypeResourceCache;
+    private final FintCache<String, SaksmappetypeResource> saksmappetypeResourceCache;
     private final FintCache<String, VariantformatResource> variantformatResourceCache;
 
     private final ArkivressursReferenceMapper arkivressursReferenceMapper;
@@ -51,7 +52,10 @@ public class CodelistController {
             FintCache<String, TilgangsrestriksjonResource> tilgangsrestriksjonResourceCache,
             FintCache<String, JournalStatusResource> journalStatusResourceCache,
             FintCache<String, JournalpostTypeResource> journalpostTypeResourceCache,
-            FintCache<String, VariantformatResource> variantformatResourceCache, ArkivressursReferenceMapper arkivressursReferenceMapper) {
+            FintCache<String, SaksmappetypeResource> saksmappetypeResourceCache,
+            FintCache<String, VariantformatResource> variantformatResourceCache,
+            ArkivressursReferenceMapper arkivressursReferenceMapper
+    ) {
         this.administrativEnhetResourceCache = administrativEnhetResourceCache;
         this.arkivdelResourceCache = arkivdelResourceCache;
         this.arkivressursResourceCache = arkivressursResourceCache;
@@ -63,6 +67,7 @@ public class CodelistController {
         this.tilgangsrestriksjonResourceCache = tilgangsrestriksjonResourceCache;
         this.journalStatusResourceCache = journalStatusResourceCache;
         this.journalpostTypeResourceCache = journalpostTypeResourceCache;
+        this.saksmappetypeResourceCache = saksmappetypeResourceCache;
         this.variantformatResourceCache = variantformatResourceCache;
         this.arkivressursReferenceMapper = arkivressursReferenceMapper;
     }
@@ -182,9 +187,20 @@ public class CodelistController {
     }
 
     @GetMapping("journalposttype")
-    public ResponseEntity<Collection<ResourceReference>> getJournalpostType() {
+    public ResponseEntity<Collection<ResourceReference>> getJournalposttype() {
         return ResponseEntity.ok(
                 journalpostTypeResourceCache
+                        .getAllDistinct()
+                        .stream()
+                        .map(journalpostTypeResource -> this.mapToResourceReference(journalpostTypeResource, journalpostTypeResource.getNavn()))
+                        .collect(Collectors.toList())
+        );
+    }
+
+    @GetMapping("saksmappetype")
+    public ResponseEntity<Collection<ResourceReference>> getSaksmappetype() {
+        return ResponseEntity.ok(
+                saksmappetypeResourceCache
                         .getAllDistinct()
                         .stream()
                         .map(journalpostTypeResource -> this.mapToResourceReference(journalpostTypeResource, journalpostTypeResource.getNavn()))

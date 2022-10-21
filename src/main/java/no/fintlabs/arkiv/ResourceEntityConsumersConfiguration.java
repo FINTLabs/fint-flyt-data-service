@@ -153,7 +153,7 @@ public class ResourceEntityConsumersConfiguration {
     }
 
     @Bean
-    ConcurrentMessageListenerContainer<String, JournalStatusResource> journalStatusResourceEntityConsumer(
+    ConcurrentMessageListenerContainer<String, JournalStatusResource> journalstatusResourceEntityConsumer(
             FintCache<String, JournalStatusResource> journalStatusResourceCache
     ) {
         return createCacheConsumer(
@@ -164,13 +164,24 @@ public class ResourceEntityConsumersConfiguration {
     }
 
     @Bean
-    ConcurrentMessageListenerContainer<String, JournalpostTypeResource> journalpostTypeEntityConsumer(
+    ConcurrentMessageListenerContainer<String, JournalpostTypeResource> journalposttypeEntityConsumer(
             FintCache<String, JournalpostTypeResource> journalpostTypeResourceCache
     ) {
         return createCacheConsumer(
                 "arkiv.kodeverk.journalposttype",
                 JournalpostTypeResource.class,
                 journalpostTypeResourceCache
+        );
+    }
+
+    @Bean
+    ConcurrentMessageListenerContainer<String, SaksmappetypeResource> saksmappetypeEntityConsumer(
+            FintCache<String, SaksmappetypeResource> saksmappeTypeResourceCache
+    ) {
+        return createCacheConsumer(
+                "arkiv.kodeverk.saksmappetype",
+                SaksmappetypeResource.class,
+                saksmappeTypeResourceCache
         );
     }
 

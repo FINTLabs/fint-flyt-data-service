@@ -74,13 +74,18 @@ public class ResourceEntityCacheConfiguration {
     }
 
     @Bean
-    FintCache<String, JournalStatusResource> journalStatusResourceCache() {
+    FintCache<String, JournalStatusResource> journalstatusResourceCache() {
         return createCache(JournalStatusResource.class);
     }
 
     @Bean
-    FintCache<String, JournalpostTypeResource> journalpostTypeResourceCache() {
+    FintCache<String, JournalpostTypeResource> journalposttypeResourceCache() {
         return createCache(JournalpostTypeResource.class);
+    }
+
+    @Bean
+    FintCache<String, SaksmappetypeResource> saksmappetypeResourceCache() {
+        return createCache(SaksmappetypeResource.class);
     }
 
     @Bean
