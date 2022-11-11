@@ -89,7 +89,11 @@ public class CodelistController {
                 klassifikasjonssystemResourceCache
                         .getAllDistinct()
                         .stream()
-                        .map(klassifikasjonssystemResource -> this.mapToResourceReference(klassifikasjonssystemResource, klassifikasjonssystemResource.getTittel()))
+                        .map(klassifikasjonssystemResource -> this.mapToResourceReference(
+                                klassifikasjonssystemResource,
+                                klassifikasjonssystemResource.getSystemId().getIdentifikatorverdi() +
+                                        " - " + klassifikasjonssystemResource.getTittel()
+                        ))
                         .collect(Collectors.toList())
         );
     }
