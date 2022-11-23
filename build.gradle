@@ -34,10 +34,7 @@ dependencies {
 
     implementation 'org.springframework.kafka:spring-kafka:2.8.4'
 
-    implementation 'org.springframework.boot:spring-boot-starter-cache'
-    implementation 'javax.cache:cache-api'
-    implementation 'org.ehcache:ehcache:3.1.0'
-    implementation 'net.sf.ehcache:ehcache:2.10.9.2'
+    implementation 'no.fintlabs:fint-flyt-cache:1.0.0'
 
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
