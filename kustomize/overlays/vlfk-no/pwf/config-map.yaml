@@ -9,6 +9,4 @@ data:
   fint.org-id: 'pwf.no'
   fint.flyt.resource-server.security.api.internal.enabled: 'true'
   fint.flyt.resource-server.security.api.internal.permit-all: 'true'
-  fint.flyt.resource-server.security.api.external.enabled: 'true'
-  fint.flyt.resource-server.security.api.external.permit-all: 'true'
   spring.webflux.base-path: 'pwf/vlfk-no'
