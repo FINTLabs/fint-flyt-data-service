@@ -4,9 +4,6 @@ fint:
     resource-server:
       security:
         api:
-          external:
-            enabled: true
-            authorized-client-ids: 1
           internal:
             enabled: true
             authorized-org-ids: viken.no, vigo.no
