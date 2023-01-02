@@ -20,12 +20,12 @@ import java.util.stream.Stream;
 
 @Slf4j
 @Service
-public class ArkivressursReferenceMapper {
+public class ArkivressursDisplayNameMapper {
 
     private final FintCache<String, PersonalressursResource> personalressursResourceCache;
     private final FintCache<String, PersonResource> personResourceCache;
 
-    public ArkivressursReferenceMapper(
+    public ArkivressursDisplayNameMapper(
             FintCache<String, PersonalressursResource> personalressursResourceCache,
             FintCache<String, PersonResource> personResourceCache
     ) {
@@ -33,18 +33,15 @@ public class ArkivressursReferenceMapper {
         this.personResourceCache = personResourceCache;
     }
 
-    public Optional<ResourceReference> map(ArkivressursResource arkivressursResource) {
+    public Optional<String> getDisplayName(ArkivressursResource arkivressursResource) {
         try {
-            return Optional.of(new ResourceReference(
-                    ResourceLinkUtil.getFirstSelfLink(arkivressursResource),
-                    this.getDisplayText(arkivressursResource)
-            ));
+            return Optional.of(this.getUserDisplayName(arkivressursResource));
         } catch (NoSuchLinkException | NoSuchCacheException | NoSuchCacheEntryException e) {
             return Optional.empty();
         }
     }
 
-    private String getDisplayText(ArkivressursResource arkivressursResource) {
+    private String getUserDisplayName(ArkivressursResource arkivressursResource) {
         String personalressursResourceHref = this.getPersonalressursResourceHref(arkivressursResource);
         PersonalressursResource personalressursResource = personalressursResourceCache.get(personalressursResourceHref);
 

@@ -1,5 +1,7 @@
 package no.fintlabs.arkiv.kodeverk;
 
+import no.fint.model.felles.basisklasser.Begrep;
+import no.fint.model.felles.kompleksedatatyper.Identifikator;
 import no.fint.model.resource.FintLinks;
 import no.fint.model.resource.arkiv.kodeverk.*;
 import no.fint.model.resource.arkiv.noark.AdministrativEnhetResource;
@@ -38,7 +40,7 @@ public class CodelistController {
     private final FintCache<String, SaksmappetypeResource> saksmappetypeResourceCache;
     private final FintCache<String, VariantformatResource> variantformatResourceCache;
 
-    private final ArkivressursReferenceMapper arkivressursReferenceMapper;
+    private final ArkivressursDisplayNameMapper arkivressursDisplayNameMapper;
 
     public CodelistController(
             FintCache<String, AdministrativEnhetResource> administrativEnhetResourceCache,
@@ -54,7 +56,7 @@ public class CodelistController {
             FintCache<String, JournalpostTypeResource> journalpostTypeResourceCache,
             FintCache<String, SaksmappetypeResource> saksmappetypeResourceCache,
             FintCache<String, VariantformatResource> variantformatResourceCache,
-            ArkivressursReferenceMapper arkivressursReferenceMapper
+            ArkivressursDisplayNameMapper arkivressursDisplayNameMapper
     ) {
         this.administrativEnhetResourceCache = administrativEnhetResourceCache;
         this.arkivdelResourceCache = arkivdelResourceCache;
@@ -69,7 +71,7 @@ public class CodelistController {
         this.journalpostTypeResourceCache = journalpostTypeResourceCache;
         this.saksmappetypeResourceCache = saksmappetypeResourceCache;
         this.variantformatResourceCache = variantformatResourceCache;
-        this.arkivressursReferenceMapper = arkivressursReferenceMapper;
+        this.arkivressursDisplayNameMapper = arkivressursDisplayNameMapper;
     }
 
     @GetMapping("administrativenhet")
@@ -78,7 +80,11 @@ public class CodelistController {
                 administrativEnhetResourceCache
                         .getAllDistinct()
                         .stream()
-                        .map(administrativEnhetResource -> this.mapToResourceReference(administrativEnhetResource, administrativEnhetResource.getNavn()))
+                        .map(administrativEnhetResource -> this.mapToResourceReference(
+                                administrativEnhetResource,
+                                administrativEnhetResource.getSystemId(),
+                                administrativEnhetResource.getNavn()
+                        ))
                         .collect(Collectors.toList())
         );
     }
@@ -91,8 +97,8 @@ public class CodelistController {
                         .stream()
                         .map(klassifikasjonssystemResource -> this.mapToResourceReference(
                                 klassifikasjonssystemResource,
-                                klassifikasjonssystemResource.getSystemId().getIdentifikatorverdi() +
-                                        " - " + klassifikasjonssystemResource.getTittel()
+                                klassifikasjonssystemResource.getSystemId(),
+                                klassifikasjonssystemResource.getTittel()
                         ))
                         .collect(Collectors.toList())
         );
@@ -105,18 +111,7 @@ public class CodelistController {
                         .get(klassifikasjonssystemLink)
                         .getKlasse()
                         .stream()
-                        .map(klasse -> new ResourceReference(klasse.getKlasseId(), klasse.getTittel()))
-                        .collect(Collectors.toList())
-        );
-    }
-
-    @GetMapping("sakstatus")
-    public ResponseEntity<Collection<ResourceReference>> getSakstatus() {
-        return ResponseEntity.ok(
-                saksstatusResourceCache
-                        .getAllDistinct()
-                        .stream()
-                        .map(saksstatusResource -> this.mapToResourceReference(saksstatusResource, saksstatusResource.getNavn()))
+                        .map(klasse -> this.mapToResourceReference(klasse.getKlasseId(), klasse.getKlasseId(), klasse.getTittel()))
                         .collect(Collectors.toList())
         );
     }
@@ -127,98 +122,11 @@ public class CodelistController {
                 arkivdelResourceCache
                         .getAllDistinct()
                         .stream()
-                        .map(arkivdelResource -> this.mapToResourceReference(arkivdelResource, arkivdelResource.getTittel()))
-                        .collect(Collectors.toList())
-        );
-    }
-
-    @GetMapping("skjermingshjemmel")
-    public ResponseEntity<Collection<ResourceReference>> getSkjermingshjemmel() {
-        return ResponseEntity.ok(
-                skjermingshjemmelResourceCache
-                        .getAllDistinct()
-                        .stream()
-                        .map(skjermingshjemmelResource -> this.mapToResourceReference(
-                                skjermingshjemmelResource,
-                                String.format("%s (%s)", skjermingshjemmelResource.getNavn(), skjermingshjemmelResource.getSystemId())
+                        .map(arkivdelResource -> this.mapToResourceReference(
+                                arkivdelResource,
+                                arkivdelResource.getSystemId(),
+                                arkivdelResource.getTittel()
                         ))
-                        .collect(Collectors.toList())
-        );
-    }
-
-    @GetMapping("tilgangsrestriksjon")
-    public ResponseEntity<Collection<ResourceReference>> getTilgangsrestriksjon() {
-        return ResponseEntity.ok(
-                tilgangsrestriksjonResourceCache
-                        .getAllDistinct()
-                        .stream()
-                        .map(tilgangsrestriksjonResource -> this.mapToResourceReference(tilgangsrestriksjonResource, tilgangsrestriksjonResource.getNavn()))
-                        .collect(Collectors.toList())
-        );
-    }
-
-    @GetMapping("dokumentstatus")
-    public ResponseEntity<Collection<ResourceReference>> getDokumentstatus() {
-        return ResponseEntity.ok(
-                dokumentStatusResourceCache
-                        .getAllDistinct()
-                        .stream()
-                        .map(dokumentStatusResource -> this.mapToResourceReference(dokumentStatusResource, dokumentStatusResource.getNavn()))
-                        .collect(Collectors.toList())
-        );
-    }
-
-    @GetMapping("dokumenttype")
-    public ResponseEntity<Collection<ResourceReference>> getDokumenttype() {
-        return ResponseEntity.ok(
-                dokumentTypeResourceCache
-                        .getAllDistinct()
-                        .stream()
-                        .map(dokumentTypeResource -> this.mapToResourceReference(dokumentTypeResource, dokumentTypeResource.getNavn()))
-                        .collect(Collectors.toList())
-        );
-    }
-
-    @GetMapping("journalstatus")
-    public ResponseEntity<Collection<ResourceReference>> getJournalstatus() {
-        return ResponseEntity.ok(
-                journalStatusResourceCache
-                        .getAllDistinct()
-                        .stream()
-                        .map(journalStatusResource -> this.mapToResourceReference(journalStatusResource, journalStatusResource.getNavn()))
-                        .collect(Collectors.toList())
-        );
-    }
-
-    @GetMapping("journalposttype")
-    public ResponseEntity<Collection<ResourceReference>> getJournalposttype() {
-        return ResponseEntity.ok(
-                journalpostTypeResourceCache
-                        .getAllDistinct()
-                        .stream()
-                        .map(journalpostTypeResource -> this.mapToResourceReference(journalpostTypeResource, journalpostTypeResource.getNavn()))
-                        .collect(Collectors.toList())
-        );
-    }
-
-    @GetMapping("saksmappetype")
-    public ResponseEntity<Collection<ResourceReference>> getSaksmappetype() {
-        return ResponseEntity.ok(
-                saksmappetypeResourceCache
-                        .getAllDistinct()
-                        .stream()
-                        .map(journalpostTypeResource -> this.mapToResourceReference(journalpostTypeResource, journalpostTypeResource.getNavn()))
-                        .collect(Collectors.toList())
-        );
-    }
-
-    @GetMapping("variantformat")
-    public ResponseEntity<Collection<ResourceReference>> getVariantformat() {
-        return ResponseEntity.ok(
-                variantformatResourceCache
-                        .getAllDistinct()
-                        .stream()
-                        .map(variantformatResource -> this.mapToResourceReference(variantformatResource, variantformatResource.getNavn()))
                         .collect(Collectors.toList())
         );
     }
@@ -229,15 +137,86 @@ public class CodelistController {
                 arkivressursResourceCache
                         .getAllDistinct()
                         .stream()
-                        .map(this.arkivressursReferenceMapper::map)
+                        .map(arkivressurs -> arkivressursDisplayNameMapper.getDisplayName(arkivressurs)
+                                .map(displayName -> this.mapToResourceReference(
+                                        arkivressurs,
+                                        arkivressurs.getSystemId(),
+                                        displayName
+                                )))
                         .filter(Optional::isPresent)
                         .map(Optional::get)
                         .collect(Collectors.toList())
         );
     }
 
-    private ResourceReference mapToResourceReference(FintLinks resource, String displayName) {
-        return new ResourceReference(ResourceLinkUtil.getFirstSelfLink(resource), displayName);
+    @GetMapping("sakstatus")
+    public ResponseEntity<Collection<ResourceReference>> getSakstatus() {
+        return getBegrepResourceReferences(saksstatusResourceCache);
+    }
+
+    @GetMapping("skjermingshjemmel")
+    public ResponseEntity<Collection<ResourceReference>> getSkjermingshjemmel() {
+        return getBegrepResourceReferences(skjermingshjemmelResourceCache);
+    }
+
+    @GetMapping("tilgangsrestriksjon")
+    public ResponseEntity<Collection<ResourceReference>> getTilgangsrestriksjon() {
+        return getBegrepResourceReferences(tilgangsrestriksjonResourceCache);
+    }
+
+    @GetMapping("dokumentstatus")
+    public ResponseEntity<Collection<ResourceReference>> getDokumentstatus() {
+        return getBegrepResourceReferences(dokumentStatusResourceCache);
+    }
+
+    @GetMapping("dokumenttype")
+    public ResponseEntity<Collection<ResourceReference>> getDokumenttype() {
+        return getBegrepResourceReferences(dokumentTypeResourceCache);
+    }
+
+    @GetMapping("journalstatus")
+    public ResponseEntity<Collection<ResourceReference>> getJournalstatus() {
+        return getBegrepResourceReferences(journalStatusResourceCache);
+    }
+
+    @GetMapping("journalposttype")
+    public ResponseEntity<Collection<ResourceReference>> getJournalposttype() {
+        return getBegrepResourceReferences(journalpostTypeResourceCache);
+    }
+
+    @GetMapping("saksmappetype")
+    public ResponseEntity<Collection<ResourceReference>> getSaksmappetype() {
+        return getBegrepResourceReferences(saksmappetypeResourceCache);
+    }
+
+    @GetMapping("variantformat")
+    public ResponseEntity<Collection<ResourceReference>> getVariantformat() {
+        return getBegrepResourceReferences(variantformatResourceCache);
+    }
+
+    private <R extends Begrep & FintLinks> ResponseEntity<Collection<ResourceReference>> getBegrepResourceReferences(FintCache<String, R> resouceCache) {
+        return ResponseEntity.ok(
+                resouceCache
+                        .getAllDistinct()
+                        .stream()
+                        .map(this::mapToResourceReference)
+                        .collect(Collectors.toList())
+        );
+    }
+
+    private <R extends Begrep & FintLinks> ResourceReference mapToResourceReference(R resource) {
+        return mapToResourceReference(ResourceLinkUtil.getFirstSelfLink(resource), resource.getSystemId().getIdentifikatorverdi(), resource.getNavn());
+    }
+
+    private ResourceReference mapToResourceReference(FintLinks resource, Identifikator id, String displayName) {
+        return mapToResourceReference(ResourceLinkUtil.getFirstSelfLink(resource), id.getIdentifikatorverdi(), displayName);
+    }
+
+    private ResourceReference mapToResourceReference(String id, String displayId, String displayName) {
+        return new ResourceReference(
+                id,
+                String.format("[%s] %s", displayId, displayName)
+        );
     }
 
 }
