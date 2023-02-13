@@ -39,6 +39,7 @@ public class CodelistController {
     private final FintCache<String, JournalpostTypeResource> journalpostTypeResourceCache;
     private final FintCache<String, SaksmappetypeResource> saksmappetypeResourceCache;
     private final FintCache<String, VariantformatResource> variantformatResourceCache;
+    private final FintCache<String, FormatResource> formatResourceCache;
 
     private final ArkivressursDisplayNameMapper arkivressursDisplayNameMapper;
 
@@ -56,6 +57,7 @@ public class CodelistController {
             FintCache<String, JournalpostTypeResource> journalpostTypeResourceCache,
             FintCache<String, SaksmappetypeResource> saksmappetypeResourceCache,
             FintCache<String, VariantformatResource> variantformatResourceCache,
+            FintCache<String, FormatResource> formatResourceCache,
             ArkivressursDisplayNameMapper arkivressursDisplayNameMapper
     ) {
         this.administrativEnhetResourceCache = administrativEnhetResourceCache;
@@ -71,6 +73,7 @@ public class CodelistController {
         this.journalpostTypeResourceCache = journalpostTypeResourceCache;
         this.saksmappetypeResourceCache = saksmappetypeResourceCache;
         this.variantformatResourceCache = variantformatResourceCache;
+        this.formatResourceCache = formatResourceCache;
         this.arkivressursDisplayNameMapper = arkivressursDisplayNameMapper;
     }
 
@@ -192,6 +195,11 @@ public class CodelistController {
     @GetMapping("variantformat")
     public ResponseEntity<Collection<ResourceReference>> getVariantformat() {
         return getBegrepResourceReferences(variantformatResourceCache);
+    }
+
+    @GetMapping("format")
+    public ResponseEntity<Collection<ResourceReference>> getFormat() {
+        return getBegrepResourceReferences(formatResourceCache);
     }
 
     private <R extends Begrep & FintLinks> ResponseEntity<Collection<ResourceReference>> getBegrepResourceReferences(FintCache<String, R> resouceCache) {

@@ -197,6 +197,17 @@ public class ResourceEntityConsumersConfiguration {
     }
 
     @Bean
+    ConcurrentMessageListenerContainer<String, FormatResource> formatResourceEntityConsumer(
+            FintCache<String, FormatResource> formatResourceCache
+    ) {
+        return createCacheConsumer(
+                "arkiv.kodeverk.format",
+                FormatResource.class,
+                formatResourceCache
+        );
+    }
+
+    @Bean
     ConcurrentMessageListenerContainer<String, PersonalressursResource> personalressursResourceEntityConsumer(
             FintCache<String, PersonalressursResource> personalressursResourceCache
     ) {

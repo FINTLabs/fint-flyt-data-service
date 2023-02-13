@@ -94,6 +94,11 @@ public class ResourceEntityCacheConfiguration {
     }
 
     @Bean
+    FintCache<String, FormatResource> formatResourceCache() {
+        return createCache(FormatResource.class);
+    }
+
+    @Bean
     FintCache<String, PersonalressursResource> personalressursResourceCache() {
         return createCache(PersonalressursResource.class);
     }
