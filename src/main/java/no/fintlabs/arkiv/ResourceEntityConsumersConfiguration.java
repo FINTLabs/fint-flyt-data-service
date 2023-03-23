@@ -120,6 +120,28 @@ public class ResourceEntityConsumersConfiguration {
     }
 
     @Bean
+    ConcurrentMessageListenerContainer<String, PartRolleResource> partRolleResourceEntityConsumer(
+            FintCache<String, PartRolleResource> partRolleResourceCache
+    ) {
+        return createCacheConsumer(
+                "arkiv.kodeverk.partrolle",
+                PartRolleResource.class,
+                partRolleResourceCache
+        );
+    }
+
+    @Bean
+    ConcurrentMessageListenerContainer<String, KorrespondansepartTypeResource> korrespondansepartTypeResourceEntityConsumer(
+            FintCache<String, KorrespondansepartTypeResource> korrespondansepartTypeResourceCache
+    ) {
+        return createCacheConsumer(
+                "arkiv.kodeverk.korrespondanseparttype",
+                KorrespondansepartTypeResource.class,
+                korrespondansepartTypeResourceCache
+        );
+    }
+
+    @Bean
     ConcurrentMessageListenerContainer<String, SaksstatusResource> saksstatusResourceEntityConsumer(
             FintCache<String, SaksstatusResource> saksstatusResourceCache
     ) {

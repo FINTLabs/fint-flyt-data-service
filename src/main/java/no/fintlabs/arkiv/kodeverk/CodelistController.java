@@ -32,6 +32,8 @@ public class CodelistController {
     private final FintCache<String, DokumentStatusResource> dokumentStatusResourceCache;
     private final FintCache<String, DokumentTypeResource> dokumentTypeResourceCache;
     private final FintCache<String, KlassifikasjonssystemResource> klassifikasjonssystemResourceCache;
+    private final FintCache<String, PartRolleResource> partRolleResourceCache;
+    private final FintCache<String, KorrespondansepartTypeResource> korrespondansepartTypeResourceCache;
     private final FintCache<String, SaksstatusResource> saksstatusResourceCache;
     private final FintCache<String, SkjermingshjemmelResource> skjermingshjemmelResourceCache;
     private final FintCache<String, TilgangsrestriksjonResource> tilgangsrestriksjonResourceCache;
@@ -50,6 +52,8 @@ public class CodelistController {
             FintCache<String, DokumentStatusResource> dokumentStatusResourceCache,
             FintCache<String, DokumentTypeResource> dokumentTypeResourceCache,
             FintCache<String, KlassifikasjonssystemResource> klassifikasjonssystemResourceCache,
+            FintCache<String, PartRolleResource> partRolleResourceCache,
+            FintCache<String, KorrespondansepartTypeResource> korrespondansepartTypeResourceCache,
             FintCache<String, SaksstatusResource> saksstatusResourceCache,
             FintCache<String, SkjermingshjemmelResource> skjermingshjemmelResourceCache,
             FintCache<String, TilgangsrestriksjonResource> tilgangsrestriksjonResourceCache,
@@ -66,6 +70,8 @@ public class CodelistController {
         this.dokumentStatusResourceCache = dokumentStatusResourceCache;
         this.dokumentTypeResourceCache = dokumentTypeResourceCache;
         this.klassifikasjonssystemResourceCache = klassifikasjonssystemResourceCache;
+        this.partRolleResourceCache = partRolleResourceCache;
+        this.korrespondansepartTypeResourceCache = korrespondansepartTypeResourceCache;
         this.saksstatusResourceCache = saksstatusResourceCache;
         this.skjermingshjemmelResourceCache = skjermingshjemmelResourceCache;
         this.tilgangsrestriksjonResourceCache = tilgangsrestriksjonResourceCache;
@@ -115,6 +121,36 @@ public class CodelistController {
                         .getKlasse()
                         .stream()
                         .map(klasse -> this.mapToResourceReference(klasse.getKlasseId(), klasse.getKlasseId(), klasse.getTittel()))
+                        .collect(Collectors.toList())
+        );
+    }
+
+    @GetMapping("partrolle")
+    public ResponseEntity<Collection<ResourceReference>> getPartRolle() {
+        return ResponseEntity.ok(
+                partRolleResourceCache
+                        .getAllDistinct()
+                        .stream()
+                        .map(partRolleResource -> this.mapToResourceReference(
+                                partRolleResource,
+                                partRolleResource.getSystemId(),
+                                partRolleResource.getNavn()
+                        ))
+                        .collect(Collectors.toList())
+        );
+    }
+
+    @GetMapping("korrespondanseparttype")
+    public ResponseEntity<Collection<ResourceReference>> getKorrespondansepartType() {
+        return ResponseEntity.ok(
+                korrespondansepartTypeResourceCache
+                        .getAllDistinct()
+                        .stream()
+                        .map(korrespondansepartTypeResource -> this.mapToResourceReference(
+                                korrespondansepartTypeResource,
+                                korrespondansepartTypeResource.getSystemId(),
+                                korrespondansepartTypeResource.getNavn()
+                        ))
                         .collect(Collectors.toList())
         );
     }

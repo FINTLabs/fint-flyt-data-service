@@ -59,6 +59,16 @@ public class ResourceEntityCacheConfiguration {
     }
 
     @Bean
+    FintCache<String, PartRolleResource> partRolleResourceCache() {
+        return createCache(PartRolleResource.class);
+    }
+
+    @Bean
+    FintCache<String, KorrespondansepartTypeResource> korrespondansepartTypeResourceCache() {
+        return createCache(KorrespondansepartTypeResource.class);
+    }
+
+    @Bean
     FintCache<String, SaksstatusResource> saksstatusResourceCache() {
         return createCache(SaksstatusResource.class);
     }
