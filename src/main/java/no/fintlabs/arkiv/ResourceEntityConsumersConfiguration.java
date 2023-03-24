@@ -1,12 +1,10 @@
 package no.fintlabs.arkiv;
 
 import no.fint.model.resource.FintLinks;
+import no.fint.model.resource.Link;
 import no.fint.model.resource.administrasjon.personal.PersonalressursResource;
 import no.fint.model.resource.arkiv.kodeverk.*;
-import no.fint.model.resource.arkiv.noark.AdministrativEnhetResource;
-import no.fint.model.resource.arkiv.noark.ArkivdelResource;
-import no.fint.model.resource.arkiv.noark.ArkivressursResource;
-import no.fint.model.resource.arkiv.noark.KlassifikasjonssystemResource;
+import no.fint.model.resource.arkiv.noark.*;
 import no.fint.model.resource.felles.PersonResource;
 import no.fintlabs.cache.FintCache;
 import no.fintlabs.kafka.entity.EntityConsumerFactoryService;
@@ -14,8 +12,10 @@ import no.fintlabs.kafka.entity.topic.EntityTopicNameParameters;
 import no.fintlabs.links.ResourceLinkUtil;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.kafka.listener.CommonLoggingErrorHandler;
 import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
+
+import java.util.List;
+import java.util.function.Function;
 
 @Configuration
 public class ResourceEntityConsumersConfiguration {
@@ -32,13 +32,26 @@ public class ResourceEntityConsumersConfiguration {
             Class<T> resourceClass,
             FintCache<String, T> cache
     ) {
+        return createCacheConsumer(
+                resourceReference,
+                resourceClass,
+                cache,
+                ResourceLinkUtil::getSelfLinks
+        );
+    }
+
+    private <T> ConcurrentMessageListenerContainer<String, T> createCacheConsumer(
+            String resourceReference,
+            Class<T> resourceClass,
+            FintCache<String, T> cache,
+            Function<T, List<String>> cacheKeyFunction
+    ) {
         return entityConsumerFactoryService.createFactory(
                 resourceClass,
                 consumerRecord -> cache.put(
-                        ResourceLinkUtil.getSelfLinks(consumerRecord.value()),
+                        cacheKeyFunction.apply(consumerRecord.value()),
                         consumerRecord.value()
-                ),
-                new CommonLoggingErrorHandler()
+                )
         ).createContainer(EntityTopicNameParameters.builder().resource(resourceReference).build());
     }
 
@@ -105,6 +118,23 @@ public class ResourceEntityConsumersConfiguration {
                 "arkiv.noark.klassifikasjonssystem",
                 KlassifikasjonssystemResource.class,
                 klassifikasjonssystemResourceCache
+        );
+    }
+
+    @Bean
+    ConcurrentMessageListenerContainer<String, KlasseResource> klasseResourceEntityConsumer(
+            FintCache<String, KlasseResource> klasseResourceCache
+    ) {
+        return createCacheConsumer(
+                "arkiv.noark.klassifikasjonssystem-klasse",
+                KlasseResource.class,
+                klasseResourceCache,
+                klasseResource -> klasseResource
+                        .getKlassifikasjonssystem()
+                        .stream()
+                        .map(Link::getHref)
+                        .map(klassifikasjonssystemHref -> klassifikasjonssystemHref + "-" + klasseResource.getKlasseId())
+                        .toList()
         );
     }
 
