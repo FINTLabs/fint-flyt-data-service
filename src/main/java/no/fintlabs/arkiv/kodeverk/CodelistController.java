@@ -29,6 +29,7 @@ public class CodelistController {
     private final FintCache<String, AdministrativEnhetResource> administrativEnhetResourceCache;
     private final FintCache<String, ArkivdelResource> arkivdelResourceCache;
     private final FintCache<String, ArkivressursResource> arkivressursResourceCache;
+    private final FintCache<String, TilknyttetRegistreringSomResource> tilknyttetRegistreringSomResourceCache;
     private final FintCache<String, DokumentStatusResource> dokumentStatusResourceCache;
     private final FintCache<String, DokumentTypeResource> dokumentTypeResourceCache;
     private final FintCache<String, KlassifikasjonssystemResource> klassifikasjonssystemResourceCache;
@@ -49,6 +50,7 @@ public class CodelistController {
             FintCache<String, AdministrativEnhetResource> administrativEnhetResourceCache,
             FintCache<String, ArkivdelResource> arkivdelResourceCache,
             FintCache<String, ArkivressursResource> arkivressursResourceCache,
+            FintCache<String, TilknyttetRegistreringSomResource> tilknyttetRegistreringSomResourceCache,
             FintCache<String, DokumentStatusResource> dokumentStatusResourceCache,
             FintCache<String, DokumentTypeResource> dokumentTypeResourceCache,
             FintCache<String, KlassifikasjonssystemResource> klassifikasjonssystemResourceCache,
@@ -67,6 +69,7 @@ public class CodelistController {
         this.administrativEnhetResourceCache = administrativEnhetResourceCache;
         this.arkivdelResourceCache = arkivdelResourceCache;
         this.arkivressursResourceCache = arkivressursResourceCache;
+        this.tilknyttetRegistreringSomResourceCache = tilknyttetRegistreringSomResourceCache;
         this.dokumentStatusResourceCache = dokumentStatusResourceCache;
         this.dokumentTypeResourceCache = dokumentTypeResourceCache;
         this.klassifikasjonssystemResourceCache = klassifikasjonssystemResourceCache;
@@ -186,6 +189,11 @@ public class CodelistController {
                         .map(Optional::get)
                         .collect(Collectors.toList())
         );
+    }
+
+    @GetMapping("tilknyttetregistreringsom")
+    public ResponseEntity<Collection<ResourceReference>> getTilknyttetRegistreringSom() {
+        return getBegrepResourceReferences(tilknyttetRegistreringSomResourceCache);
     }
 
     @GetMapping("sakstatus")
