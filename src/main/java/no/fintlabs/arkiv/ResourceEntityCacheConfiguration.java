@@ -36,6 +36,11 @@ public class ResourceEntityCacheConfiguration {
     }
 
     @Bean
+    FintCache<String, TilknyttetRegistreringSomResource> tilknyttetRegistreringSomResourceCache() {
+        return createCache(TilknyttetRegistreringSomResource.class);
+    }
+
+    @Bean
     FintCache<String, DokumentStatusResource> dokumentStatusResourceCache() {
         return createCache(DokumentStatusResource.class);
     }

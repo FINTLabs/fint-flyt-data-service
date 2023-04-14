@@ -89,6 +89,17 @@ public class ResourceEntityConsumersConfiguration {
     }
 
     @Bean
+    ConcurrentMessageListenerContainer<String, TilknyttetRegistreringSomResource> tilknyttetRegistreringSomResourceEntityConsumer(
+            FintCache<String, TilknyttetRegistreringSomResource> tilknyttetRegistreringSomResourceCache
+    ) {
+        return createCacheConsumer(
+                "arkiv.kodeverk.tilknyttetregistreringsom",
+                TilknyttetRegistreringSomResource.class,
+                tilknyttetRegistreringSomResourceCache
+        );
+    }
+
+    @Bean
     ConcurrentMessageListenerContainer<String, DokumentStatusResource> dokumentStatusResourceEntityConsumer(
             FintCache<String, DokumentStatusResource> dokumentStatusResourceCache
     ) {
