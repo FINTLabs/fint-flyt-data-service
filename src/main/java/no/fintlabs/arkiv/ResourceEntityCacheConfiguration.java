@@ -2,10 +2,7 @@ package no.fintlabs.arkiv;
 
 import no.fint.model.resource.administrasjon.personal.PersonalressursResource;
 import no.fint.model.resource.arkiv.kodeverk.*;
-import no.fint.model.resource.arkiv.noark.AdministrativEnhetResource;
-import no.fint.model.resource.arkiv.noark.ArkivdelResource;
-import no.fint.model.resource.arkiv.noark.ArkivressursResource;
-import no.fint.model.resource.arkiv.noark.KlassifikasjonssystemResource;
+import no.fint.model.resource.arkiv.noark.*;
 import no.fint.model.resource.felles.PersonResource;
 import no.fintlabs.cache.FintCache;
 import no.fintlabs.cache.FintCacheManager;
@@ -56,6 +53,11 @@ public class ResourceEntityCacheConfiguration {
     @Bean
     FintCache<String, KlassifikasjonssystemResource> klassifikasjonssystemResourceCache() {
         return createCache(KlassifikasjonssystemResource.class);
+    }
+
+    @Bean
+    FintCache<String, KlasseResource> klasseResourceCache() {
+        return createCache(KlasseResource.class);
     }
 
     @Bean

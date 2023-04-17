@@ -3,11 +3,9 @@ package no.fintlabs.arkiv.kodeverk;
 import no.fint.model.felles.basisklasser.Begrep;
 import no.fint.model.felles.kompleksedatatyper.Identifikator;
 import no.fint.model.resource.FintLinks;
+import no.fint.model.resource.Link;
 import no.fint.model.resource.arkiv.kodeverk.*;
-import no.fint.model.resource.arkiv.noark.AdministrativEnhetResource;
-import no.fint.model.resource.arkiv.noark.ArkivdelResource;
-import no.fint.model.resource.arkiv.noark.ArkivressursResource;
-import no.fint.model.resource.arkiv.noark.KlassifikasjonssystemResource;
+import no.fint.model.resource.arkiv.noark.*;
 import no.fintlabs.cache.FintCache;
 import no.fintlabs.links.ResourceLinkUtil;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +31,7 @@ public class CodelistController {
     private final FintCache<String, DokumentStatusResource> dokumentStatusResourceCache;
     private final FintCache<String, DokumentTypeResource> dokumentTypeResourceCache;
     private final FintCache<String, KlassifikasjonssystemResource> klassifikasjonssystemResourceCache;
+    private final FintCache<String, KlasseResource> klasseResourceCache;
     private final FintCache<String, PartRolleResource> partRolleResourceCache;
     private final FintCache<String, KorrespondansepartTypeResource> korrespondansepartTypeResourceCache;
     private final FintCache<String, SaksstatusResource> saksstatusResourceCache;
@@ -54,6 +53,7 @@ public class CodelistController {
             FintCache<String, DokumentStatusResource> dokumentStatusResourceCache,
             FintCache<String, DokumentTypeResource> dokumentTypeResourceCache,
             FintCache<String, KlassifikasjonssystemResource> klassifikasjonssystemResourceCache,
+            FintCache<String, KlasseResource> klasseResourceCache,
             FintCache<String, PartRolleResource> partRolleResourceCache,
             FintCache<String, KorrespondansepartTypeResource> korrespondansepartTypeResourceCache,
             FintCache<String, SaksstatusResource> saksstatusResourceCache,
@@ -73,6 +73,7 @@ public class CodelistController {
         this.dokumentStatusResourceCache = dokumentStatusResourceCache;
         this.dokumentTypeResourceCache = dokumentTypeResourceCache;
         this.klassifikasjonssystemResourceCache = klassifikasjonssystemResourceCache;
+        this.klasseResourceCache = klasseResourceCache;
         this.partRolleResourceCache = partRolleResourceCache;
         this.korrespondansepartTypeResourceCache = korrespondansepartTypeResourceCache;
         this.saksstatusResourceCache = saksstatusResourceCache;
@@ -119,10 +120,15 @@ public class CodelistController {
     @GetMapping("klasse")
     public ResponseEntity<Collection<ResourceReference>> getKlasse(@RequestParam String klassifikasjonssystemLink) {
         return ResponseEntity.ok(
-                klassifikasjonssystemResourceCache
-                        .get(klassifikasjonssystemLink)
-                        .getKlasse()
+                klasseResourceCache
+                        .getAllDistinct()
                         .stream()
+                        .filter(
+                                klasse -> klasse.getKlassifikasjonssystem()
+                                        .stream()
+                                        .map(Link::getHref)
+                                        .anyMatch(href -> href.equals(klassifikasjonssystemLink))
+                        )
                         .map(klasse -> this.mapToResourceReference(klasse.getKlasseId(), klasse.getKlasseId(), klasse.getTittel()))
                         .collect(Collectors.toList())
         );
