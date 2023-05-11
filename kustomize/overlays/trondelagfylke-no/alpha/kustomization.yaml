@@ -29,12 +29,3 @@ patches:
     target:
       kind: Application
       name: fint-flyt-data-service
-
-  - patch: |-
-      - op: replace
-        path: "/spec/basePath"
-        value: "/beta/trondelagfylke-no"
-    target:
-      kind: FLAISSso
-      name: fint-flyt-data-service-sso
-

@@ -28,7 +28,7 @@ spec:
     enabled: true
     basePath: path
     middlewares:
-      - fint-flyt-data-service-sso
+      - fint-flyt-auth-forward-sso
   env:
     - name: JAVA_TOOL_OPTIONS
       value: '-XX:+ExitOnOutOfMemoryError -Xmx1840M'
