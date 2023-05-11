@@ -1,7 +1,15 @@
 apiVersion: fintlabs.no/v1alpha1
 kind: FLAISSso
 metadata:
-  name: fint-flyt-instance-service
+  name: fint-flyt-data-service-sso
+  labels:
+    app.kubernetes.io/name: fint-flyt-data-service-sso
+    app.kubernetes.io/instance: fint-flyt-data-service_fintlabs_no
+    app.kubernetes.io/version: latest
+    app.kubernetes.io/component: sso
+    app.kubernetes.io/part-of: fint-flyt
+    fintlabs.no/team: flyt
+    fintlabs.no/org-id: fintlabs.no
 spec:
   hostname: flyt.vigoiks.no
   basePath: path
