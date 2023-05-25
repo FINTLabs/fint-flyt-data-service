@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Collection;
 import java.util.Optional;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 import static no.fintlabs.resourceserver.UrlPaths.INTERNAL_API;
@@ -95,8 +96,9 @@ public class CodelistController {
                         .stream()
                         .map(administrativEnhetResource -> this.mapToResourceReference(
                                 administrativEnhetResource,
-                                administrativEnhetResource.getSystemId(),
-                                administrativEnhetResource.getNavn()
+                                new ResourceReferenceDisplayNameBuilder()
+                                        .technicalId(administrativEnhetResource.getSystemId())
+                                        .name(administrativEnhetResource.getNavn())
                         ))
                         .collect(Collectors.toList())
         );
@@ -110,8 +112,9 @@ public class CodelistController {
                         .stream()
                         .map(klassifikasjonssystemResource -> this.mapToResourceReference(
                                 klassifikasjonssystemResource,
-                                klassifikasjonssystemResource.getSystemId(),
-                                klassifikasjonssystemResource.getTittel()
+                                new ResourceReferenceDisplayNameBuilder()
+                                        .technicalId(klassifikasjonssystemResource.getSystemId())
+                                        .name(klassifikasjonssystemResource.getTittel())
                         ))
                         .collect(Collectors.toList())
         );
@@ -129,37 +132,13 @@ public class CodelistController {
                                         .map(Link::getHref)
                                         .anyMatch(href -> href.equals(klassifikasjonssystemLink))
                         )
-                        .map(klasse -> this.mapToResourceReference(klasse.getKlasseId(), klasse.getKlasseId(), klasse.getTittel()))
-                        .collect(Collectors.toList())
-        );
-    }
-
-    @GetMapping("partrolle")
-    public ResponseEntity<Collection<ResourceReference>> getPartRolle() {
-        return ResponseEntity.ok(
-                partRolleResourceCache
-                        .getAllDistinct()
-                        .stream()
-                        .map(partRolleResource -> this.mapToResourceReference(
-                                partRolleResource,
-                                partRolleResource.getSystemId(),
-                                partRolleResource.getNavn()
-                        ))
-                        .collect(Collectors.toList())
-        );
-    }
-
-    @GetMapping("korrespondanseparttype")
-    public ResponseEntity<Collection<ResourceReference>> getKorrespondansepartType() {
-        return ResponseEntity.ok(
-                korrespondansepartTypeResourceCache
-                        .getAllDistinct()
-                        .stream()
-                        .map(korrespondansepartTypeResource -> this.mapToResourceReference(
-                                korrespondansepartTypeResource,
-                                korrespondansepartTypeResource.getSystemId(),
-                                korrespondansepartTypeResource.getNavn()
-                        ))
+                        .map(klasse -> this.mapToResourceReference(
+                                        klasse.getKlasseId(),
+                                        new ResourceReferenceDisplayNameBuilder()
+                                                .functionalId(klasse.getKlasseId())
+                                                .name(klasse.getTittel())
+                                )
+                        )
                         .collect(Collectors.toList())
         );
     }
@@ -172,8 +151,9 @@ public class CodelistController {
                         .stream()
                         .map(arkivdelResource -> this.mapToResourceReference(
                                 arkivdelResource,
-                                arkivdelResource.getSystemId(),
-                                arkivdelResource.getTittel()
+                                new ResourceReferenceDisplayNameBuilder()
+                                        .technicalId(arkivdelResource.getSystemId())
+                                        .name(arkivdelResource.getTittel())
                         ))
                         .collect(Collectors.toList())
         );
@@ -185,16 +165,38 @@ public class CodelistController {
                 arkivressursResourceCache
                         .getAllDistinct()
                         .stream()
-                        .map(arkivressurs -> arkivressursDisplayNameMapper.getDisplayName(arkivressurs)
-                                .map(displayName -> this.mapToResourceReference(
-                                        arkivressurs,
-                                        arkivressurs.getSystemId(),
-                                        displayName
-                                )))
+                        .map(arkivressurs ->
+                                arkivressursDisplayNameMapper
+                                        .findPersonalressursBrukernavn(arkivressurs)
+                                        .map(personalressursBrukernavn -> new ResourceReferenceDisplayNameBuilder()
+                                                .functionalId(personalressursBrukernavn)
+                                        )
+                                        .flatMap(resourceReferenceDisplayNameBuilder ->
+                                                arkivressursDisplayNameMapper.findPersonNavn(arkivressurs)
+                                                        .map(resourceReferenceDisplayNameBuilder::name)
+                                        )
+                                        .map(resourceReferenceDisplayNameBuilder ->
+                                                resourceReferenceDisplayNameBuilder.technicalId(arkivressurs.getSystemId())
+                                        )
+                                        .map(resourceReferenceDisplayNameBuilder -> mapToResourceReference(
+                                                arkivressurs,
+                                                resourceReferenceDisplayNameBuilder
+                                        ))
+                        )
                         .filter(Optional::isPresent)
                         .map(Optional::get)
                         .collect(Collectors.toList())
         );
+    }
+
+    @GetMapping("partrolle")
+    public ResponseEntity<Collection<ResourceReference>> getPartRolle() {
+        return getBegrepResourceReferences(partRolleResourceCache);
+    }
+
+    @GetMapping("korrespondanseparttype")
+    public ResponseEntity<Collection<ResourceReference>> getKorrespondansepartType() {
+        return getBegrepResourceReferences(korrespondansepartTypeResourceCache);
     }
 
     @GetMapping("tilknyttetregistreringsom")
@@ -263,18 +265,68 @@ public class CodelistController {
     }
 
     private <R extends Begrep & FintLinks> ResourceReference mapToResourceReference(R resource) {
-        return mapToResourceReference(ResourceLinkUtil.getFirstSelfLink(resource), resource.getSystemId().getIdentifikatorverdi(), resource.getNavn());
+        return new ResourceReference(
+                ResourceLinkUtil.getFirstSelfLink(resource),
+                new ResourceReferenceDisplayNameBuilder()
+                        .functionalId(resource.getKode())
+                        .technicalId(resource.getSystemId())
+                        .name(resource.getNavn())
+                        .build()
+        );
     }
 
-    private ResourceReference mapToResourceReference(FintLinks resource, Identifikator id, String displayName) {
-        return mapToResourceReference(ResourceLinkUtil.getFirstSelfLink(resource), id.getIdentifikatorverdi(), displayName);
+    private ResourceReference mapToResourceReference(FintLinks resource, ResourceReferenceDisplayNameBuilder resourceReferenceDisplayNameBuilder) {
+        return new ResourceReference(
+                ResourceLinkUtil.getFirstSelfLink(resource),
+                resourceReferenceDisplayNameBuilder.build()
+        );
     }
 
-    private ResourceReference mapToResourceReference(String id, String displayId, String displayName) {
+    private ResourceReference mapToResourceReference(String id, ResourceReferenceDisplayNameBuilder resourceReferenceDisplayNameBuilder) {
         return new ResourceReference(
                 id,
-                String.format("[%s] %s", displayId, displayName)
+                resourceReferenceDisplayNameBuilder.build()
         );
+    }
+
+    private static class ResourceReferenceDisplayNameBuilder {
+        private String functionalId;
+        private String technicalId;
+        private String name;
+
+        ResourceReferenceDisplayNameBuilder functionalId(String functionalId) {
+            this.functionalId = functionalId;
+            return this;
+        }
+
+        ResourceReferenceDisplayNameBuilder technicalId(Identifikator technicalId) {
+            return technicalId(technicalId.getIdentifikatorverdi());
+        }
+
+        ResourceReferenceDisplayNameBuilder technicalId(String technicalId) {
+            this.technicalId = technicalId;
+            return this;
+        }
+
+        ResourceReferenceDisplayNameBuilder name(String name) {
+            this.name = name;
+            return this;
+        }
+
+        String build() {
+            StringJoiner stringJoiner = new StringJoiner(" ");
+            if (functionalId != null) {
+                stringJoiner.add("[" + functionalId + "]");
+            }
+            if (name != null) {
+                stringJoiner.add(name);
+            }
+            if (technicalId != null) {
+                stringJoiner.add("{" + technicalId + "}");
+            }
+            return stringJoiner.toString();
+        }
+
     }
 
 }

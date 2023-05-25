@@ -33,15 +33,23 @@ public class ArkivressursDisplayNameMapper {
         this.personResourceCache = personResourceCache;
     }
 
-    public Optional<String> getDisplayName(ArkivressursResource arkivressursResource) {
+    public Optional<String> findPersonNavn(ArkivressursResource arkivressursResource) {
         try {
-            return Optional.of(this.getUserDisplayName(arkivressursResource));
+            return Optional.of(getPersonNavn(arkivressursResource));
         } catch (NoSuchLinkException | NoSuchCacheException | NoSuchCacheEntryException e) {
             return Optional.empty();
         }
     }
 
-    private String getUserDisplayName(ArkivressursResource arkivressursResource) {
+    public Optional<String> findPersonalressursBrukernavn(ArkivressursResource arkivressursResource) {
+        try {
+            return Optional.of(getPersonalressursBrukernavn(arkivressursResource));
+        } catch (NoSuchLinkException | NoSuchCacheException | NoSuchCacheEntryException e) {
+            return Optional.empty();
+        }
+    }
+
+    private String getPersonNavn(ArkivressursResource arkivressursResource) {
         String personalressursResourceHref = this.getPersonalressursResourceHref(arkivressursResource);
         PersonalressursResource personalressursResource = personalressursResourceCache.get(personalressursResourceHref);
 
@@ -52,16 +60,19 @@ public class ArkivressursDisplayNameMapper {
         if (personnavn == null) {
             throw new IllegalStateException("Person resource contains no name");
         }
-        String personnavnString = Stream.of(
+        return Stream.of(
                         personnavn.getFornavn(),
                         personnavn.getMellomnavn(),
                         personnavn.getEtternavn()
                 ).filter(Objects::nonNull)
                 .collect(Collectors.joining(" "));
+    }
 
-        String brukernavnString = personalressursResource.getBrukernavn().getIdentifikatorverdi();
+    private String getPersonalressursBrukernavn(ArkivressursResource arkivressursResource) {
+        String personalressursResourceHref = this.getPersonalressursResourceHref(arkivressursResource);
+        PersonalressursResource personalressursResource = personalressursResourceCache.get(personalressursResourceHref);
 
-        return String.format("%s (%s)", personnavnString, brukernavnString);
+        return personalressursResource.getBrukernavn().getIdentifikatorverdi();
     }
 
     private String getPersonalressursResourceHref(ArkivressursResource arkivressursResource) {
