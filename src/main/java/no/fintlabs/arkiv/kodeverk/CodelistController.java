@@ -322,7 +322,7 @@ public class CodelistController {
                 stringJoiner.add(name);
             }
             if (technicalId != null) {
-                stringJoiner.add("{" + technicalId + "}");
+                stringJoiner.add("#" + technicalId);
             }
             return stringJoiner.toString();
         }
