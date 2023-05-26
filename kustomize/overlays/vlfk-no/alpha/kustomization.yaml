@@ -22,7 +22,7 @@ patches:
         value: "/alpha/vlfk-no"
       - op: replace
         path: "/spec/ingress/basePath"
-        value: "/beta/vlfk-no/api/intern/arkiv"
+        value: "/alpha/vlfk-no/api/intern/arkiv"
       - op: replace
         path: "/spec/env/1/value"
         value: "vlfk.no, vigo.no"

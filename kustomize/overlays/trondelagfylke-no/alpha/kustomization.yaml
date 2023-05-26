@@ -22,7 +22,7 @@ patches:
         value: "/alpha/trondelagfylke-no"
       - op: replace
         path: "/spec/ingress/basePath"
-        value: "/beta/trondelagfylke-no/api/intern/arkiv"
+        value: "/alpha/trondelagfylke-no/api/intern/arkiv"
       - op: replace
         path: "/spec/env/1/value"
         value: "trondelagfylke.no, vigo.no"
