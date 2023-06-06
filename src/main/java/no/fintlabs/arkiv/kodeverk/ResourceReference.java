@@ -1,10 +1,13 @@
 package no.fintlabs.arkiv.kodeverk;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+
 
 @AllArgsConstructor
-@Data
+@Getter
+@EqualsAndHashCode
 public class ResourceReference {
 
     private final String id;

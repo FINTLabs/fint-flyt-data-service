@@ -1,8 +1,10 @@
 package no.fintlabs.arkiv.sak;
 
-import lombok.Data;
+import lombok.Builder;
+import lombok.Getter;
+@Getter
+@Builder
 
-@Data
 public class CaseTitle {
 
     private final String value;
