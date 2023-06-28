@@ -1,5 +1,6 @@
 package no.fintlabs.arkiv.kodeverk;
 
+import no.fint.model.felles.kompleksedatatyper.Identifikator;
 import no.fint.model.felles.kompleksedatatyper.Personnavn;
 import no.fint.model.resource.Link;
 import no.fint.model.resource.administrasjon.personal.PersonalressursResource;
@@ -33,7 +34,7 @@ class ArkivressursDisplayNameMapperTest {
     ArkivressursDisplayNameMapper arkivressursDisplayNameMapper;
 
     @BeforeEach
-    private void setUp() {
+    public void setUp() {
         arkivressursDisplayNameMapper = new ArkivressursDisplayNameMapper(
                 personalressursResourceCache,
                 personResourceCache
@@ -52,7 +53,24 @@ class ArkivressursDisplayNameMapperTest {
         when(personResourceCache.get("testPersonLink1")).thenReturn(personResource);
 
         when(personResource.getNavn()).thenReturn(personnavn);
+
+
         return arkivressursResource;
+    }
+
+    private ArkivressursResource setupMocksForPersonBrukernavn() {
+        ArkivressursResource arkivressursResource = mock(ArkivressursResource.class);
+        when(arkivressursResource.getPersonalressurs()).thenReturn(List.of(Link.with("testPersonalressursLink1")));
+
+        PersonalressursResource personalressursResource = mock(PersonalressursResource.class);
+        when(personalressursResourceCache.get("testPersonalressursLink1")).thenReturn(personalressursResource);
+
+        Identifikator identifikator = new Identifikator();
+        identifikator.setIdentifikatorverdi("12345");
+        when(personalressursResource.getBrukernavn()).thenReturn(identifikator);
+
+        return arkivressursResource;
+
     }
 
     @Test
@@ -176,6 +194,30 @@ class ArkivressursDisplayNameMapperTest {
 
         verify(personResourceCache, times(1)).get("testPersonLink1");
         verifyNoMoreInteractions(personResourceCache);
+    }
+
+    @Test
+    public void getPersonalressursBrukernavn_shouldReturnIdentifikator() {
+        ArkivressursResource arkivressursResource = setupMocksForPersonBrukernavn();
+
+        Optional<String> personBrukernavn = arkivressursDisplayNameMapper.findPersonalressursBrukernavn(arkivressursResource);
+
+        assertThat(personBrukernavn).isPresent();
+        assertThat(personBrukernavn).contains("12345");
+    }
+
+    @Test
+    public void getPersonalressursBrukernavn_shouldReturnEmpty() {
+        ArkivressursResource arkivressursResource = mock(ArkivressursResource.class);
+        when(arkivressursResource.getPersonalressurs()).thenReturn(List.of(Link.with("testPersonalressursLink1")));
+
+        when(personalressursResourceCache.get("testPersonalressursLink1")).thenThrow(
+                new NoSuchCacheEntryException("testPersonalressursLink1")
+        );
+
+        Optional<String> personBrukernavn = arkivressursDisplayNameMapper.findPersonalressursBrukernavn(arkivressursResource);
+
+        assertThat(personBrukernavn).isEmpty();
     }
 
 }
