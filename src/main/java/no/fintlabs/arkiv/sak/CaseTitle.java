@@ -9,4 +9,8 @@ public class CaseTitle {
 
     private final String value;
 
+    @Override
+    public String toString() {
+        return "Sensitive data omitted";
+    }
 }
