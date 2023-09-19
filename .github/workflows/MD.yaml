@@ -106,18 +106,19 @@ jobs:
 
       - uses: azure/login@v1
         with:
-          creds: '${{ secrets.AKS_{0}_FINT_GITHUB }}'
+          creds: "${{ secrets[format('AKS_{0}_FINT_GITHUB', steps.environment.outputs.result)] }}"
 
       - uses: azure/use-kubelogin@v1
         with:
           kubelogin-version: 'v0.0.32'
 
-      - name: Set the target to ${{ env.CLUSTER_NAME }} cluster.
+      - name: Set the target cluster
         uses: azure/aks-set-context@v3
         with:
-          creds: "${{ secrets[format('AKS_{0}_FINT_GITHUB', steps.environment.outputs.result)] }}"
-          cluster-name: ${{ env.CLUSTER_NAME }}
-          resource-group: ${{ steps.rg.outputs.result }}
+          cluster-name: '${{ matrix.cluster }}'
+          resource-group: '${{ steps.resource-group.outputs.result }}'
+          admin: 'true'
+          use-kubelogin: 'true'
 
       - name: Deploy to ${{ env.CLUSTER_NAME }}
         uses: azure/k8s-deploy@v4
