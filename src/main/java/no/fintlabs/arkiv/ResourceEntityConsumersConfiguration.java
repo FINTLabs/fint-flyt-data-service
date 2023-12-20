@@ -46,7 +46,7 @@ public class ResourceEntityConsumersConfiguration {
             FintCache<String, T> cache,
             Function<T, List<String>> cacheKeyFunction
     ) {
-        return entityConsumerFactoryService.createFactory(
+        return entityConsumerFactoryService.createRecordConsumerFactory(
                 resourceClass,
                 consumerRecord -> cache.put(
                         cacheKeyFunction.apply(consumerRecord.value()),
